@@ -1,0 +1,43 @@
+.head {
+    text-align: center;
+    color: #4b3b42;
+}
+
+body {
+    background: #dbd2c3;
+}
+
+.container {
+    text-align: left;
+    margin: 5rem 5rem;
+}
+
+.text {
+    height: 10rem;
+    width: 80rem;
+    border-color: #dfd3a2;
+    background-color:#887d69;
+}
+
+.text::placeholder {
+    color: #4b3b42;
+}
+
+.btn {
+    margin: 2rem 10rem;
+    border: 2 widthrem;
+    height: 3rem;
+    background-color:#887d69;
+    border-radius: 20%;
+    color: #4b3b42;
+}
+
+.button {
+    text-align: center;
+}
+
+.desc {
+    text-align: justify;
+    margin: 2rem;
+    color: #4b3b42;
+}

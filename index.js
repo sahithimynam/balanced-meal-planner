@@ -1,5 +1,4 @@
 /**
- * NutriPlan - Legacy script entry alias
- * Loads the modular scripts in sequence if loaded directly.
+ * Compatibility alias loading app.js
  */
-console.log("NutriPlan loaded via index.js compatibility alias.");
+import './app.js';

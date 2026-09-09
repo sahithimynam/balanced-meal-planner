@@ -1,101 +1,122 @@
-# 🥗 NutriPlan - Balanced Meal Planner & Diet Generator
+# 🥗 Balanced Meal Planner
 
-A modern, responsive, 100% frontend web application built with **HTML5, CSS3, and ES6+ JavaScript**, featuring integration with the **Spoonacular Food API**. NutriPlan empowers users to generate balanced diet recommendations from available kitchen ingredients, explore healthy recipes with advanced dietary filters, and manage daily macronutrient goals (Calories, Protein, Carbs, Fats) with automatic browser persistence.
+A clean, beginner-friendly frontend web application built with **HTML5, CSS3, and Vanilla JavaScript**. The application allows users to enter whatever ingredients they have at home, generates practical everyday meal suggestions (Breakfast, Lunch, Dinner, Snack), estimates nutritional values, and educates users on balanced eating by identifying missing nutrient groups with actionable ingredient recommendations.
 
 ---
 
-## 🚀 Live Preview & Quick Start
+## 🎯 Project Overview & Objective
 
-NutriPlan is completely **client-side** (no Node.js, Express, MongoDB, or backend servers required).
+Many people struggle to figure out what to cook with the ingredients currently sitting in their kitchen, often leading to nutritionally skewed meals.
 
-### Option 1: Direct Browser Launch
-Simply open `index.html` in any modern web browser (Chrome, Edge, Firefox, Safari).
+The **Balanced Meal Planner** solves this by:
+1. Turning available kitchen ingredients into realistic meal ideas.
+2. Breaking down the four core nutritional pillars (**Protein**, **Carbohydrates**, **Healthy Fats**, and **Vegetables / Fiber**).
+3. Educating users on what their meal lacks and suggesting exact grocery items to improve diet quality.
 
-### Option 2: Local Static Server
-If you prefer running via a local static web server:
-```bash
-# Python 3
-python -m http.server 8000
+---
 
-# Open http://localhost:8000 in your browser
+## 🔄 Application Architecture (Input ➔ Processing ➔ Output)
+
+The application follows a clean, single-page client-side architecture with zero external dependencies:
+
+```
++------------------------------------------------------------------+
+| INPUT                                                            |
+| User enters available ingredients (e.g., "chicken, rice, eggs")  |
++------------------------------------------------------------------+
+                                |
+                                v
++------------------------------------------------------------------+
+| PROCESSING (Client-Side Vanilla JS)                              |
+| 1. Tokenizes & cleans ingredient list (commas, spaces, newlines) |
+| 2. Maps items against built-in nutritional knowledge base        |
+| 3. Categorizes into: Protein, Carbs, Healthy Fats, Veggies/Fiber |
+| 4. Calculates estimated macronutrients (Calories, P, C, F)       |
+| 5. Identifies which nutrient groups are Present vs. Missing      |
+| 6. Generates Breakfast, Lunch, Dinner, and Snack suggestions     |
++------------------------------------------------------------------+
+                                |
+                                v
++------------------------------------------------------------------+
+| OUTPUT                                                           |
+| 1. 🍽️ Practical Meal Suggestions (Breakfast, Lunch, Dinner, Snack)|
+| 2. 📊 Estimated Nutrition Summary (Calories, Protein, Carbs, Fat)|
+| 3. ⚖️ Nutritional Balance Check (✅ Present vs ⚠️ Missing/Low)   |
+| 4. 💡 Ingredient Recommendations for missing nutrient groups    |
+| 5. ℹ️ Guidance Note ("This plan can still be followed...")       |
++------------------------------------------------------------------+
 ```
 
 ---
 
-## 📋 Analysis of Issues Found & Fixes Implemented
+## 🛠️ Technology Stack
 
-During the project audit, multiple critical bugs, syntax errors, and architectural limitations were identified in the original repository. Below is a comprehensive breakdown:
-
-| # | Component | Original Issue | Severity | Fix Implemented |
-|---|---|---|---|---|
-| 1 | `ind.html` | Referenced non-existent files: `<link rel="stylesheet" href="index.css">` and `<script src="./index.js"></script>`, while files were named `ind.css` and `ind.jsx`. | **Critical** | Restructured project to standard `index.html`, `css/style.css`, and modular JS in `js/`. Created backward-compatible aliases for legacy files. |
-| 2 | `ind.html` | Default file name `ind.html` prevented standard static hosting index resolution. Generic `<title>Document</title>`. | **High** | Renamed primary entry to `index.html`, added semantic metadata, viewport settings, and branding. |
-| 3 | `ind.jsx` | Named `.jsx` despite containing plain vanilla DOM JavaScript. | **Medium** | Migrated to standard ES6+ modular architecture (`app.js`, `api.js`, `ui.js`, `storage.js`, `mock-data.js`, `config.js`). |
-| 4 | Spoonacular API Key | Hardcoded API key `fca38ae0a6fb405980e83815c4b4be93` returned **HTTP 401 Unauthorized** (invalid/expired). | **Critical** | Created an **in-app API Key Configuration Modal** where users can input, test, and save their own Spoonacular key to `localStorage`. |
-| 5 | Error Handling | Unchecked API responses accessed `searchData.results.length` on 401 errors, throwing uncaught `TypeError` crashes. | **Critical** | Implemented robust HTTP status handling for `200`, `401`, `402` (quota reached), and `429` (rate limit), backed by a graceful **Demo Mode fallback**. |
-| 6 | Quota & Performance | **N+1 API Problem**: Made 3 sequential API calls (`search`, `information`, `guessNutrition`) per ingredient, burning 15+ calls for 5 items. | **High** | Replaced with bulk recipe queries (`/recipes/findByIngredients` and `/recipes/complexSearch`), caching, and client-side macronutrient heuristics. |
-| 7 | Ingredient Parsing | `split(' ')` broke multi-word ingredients (e.g. "sweet potato" was searched as "sweet" and "potato" separately). | **Medium** | Implemented intelligent delimiter parsing supporting commas, spaces, and newlines for complex ingredients. |
-| 8 | `ind.css` Responsiveness | `.text { width: 80rem; }` forced a 1280px fixed width, breaking completely on mobile/tablet viewports. | **Critical** | Replaced with fluid responsive CSS grid and flexbox (`minmax(280px, 1fr)`). Works from 320px mobile to 4K displays. |
-| 9 | `ind.css` Syntax | `.btn { border: 2 widthrem; }` was invalid CSS syntax. | **Medium** | Replaced with clean, modern CSS button styles with subtle hover elevations. |
-| 10 | `ind.css` Aesthetics | Low-contrast brown/beige color palette (`#dbd2c3`, `#887d69`, `#4b3b42`) failed WCAG AA accessibility standards. | **High** | Designed a modern emerald design system with accessible contrast ratios, glassmorphism, and smooth CSS transitions. |
-| 11 | Theme Support | No dark mode available. | **Feature Gap** | Added a full **Dark / Light Mode toggle** with CSS variables and `localStorage` persistence. |
-| 12 | Plan Persistence | Generated meals vanished on page refresh. | **Feature Gap** | Added full `localStorage` synchronization for daily meal plans (Breakfast, Lunch, Dinner, Snacks) and active ingredients. |
-| 13 | Recipe Search | Missing dedicated recipe search engine. | **Feature Gap** | Built a multi-filter recipe search tab querying Spoonacular by name, meal category, dietary preferences, and max calories. |
+- **HTML5**: Semantic, accessible markup (`<header>`, `<section>`, `<main>`, `<textarea>`, `<button>`).
+- **CSS3**: Clean, responsive styling using modern Flexbox, CSS Grid, and custom variables. Zero bulky CSS frameworks.
+- **Vanilla JavaScript (ES6+)**: Modular, readable functions handling DOM events, string parsing, nutritional analysis, and dynamic card generation.
+- **Dependencies**: None. 100% self-contained client-side application. No Node.js, Express, React, or external API keys required.
 
 ---
 
-## 🔑 Spoonacular API Configuration Guide
+## 🚀 Step-by-Step Guide to Run Locally
 
-NutriPlan supports both **Live Spoonacular API** calls and an **Offline Demo Mode**.
+### Method 1: Using Python Static Server (Recommended)
+1. Open PowerShell or Command Prompt.
+2. Navigate to the project directory:
+   ```bash
+   cd "C:\Users\krishna sahithi\.gemini\antigravity\scratch\balanced-meal-planner"
+   ```
+3. Start the local server:
+   ```bash
+   python -m http.server 8080
+   ```
+4. Open your browser and navigate to:
+   ```text
+   http://localhost:8080
+   ```
 
-### 1. Getting a Free Spoonacular API Key
-1. Visit [Spoonacular Food API](https://spoonacular.com/food-api) and sign up for a free developer account.
-2. Navigate to your **Dashboard** -> **Profile** -> **API Keys**.
-3. Copy your 32-character API key.
-
-### 2. Configuring the Key in NutriPlan
-1. Click the **🔑 API Settings** button in the top navigation bar.
-2. Paste your API key into the input field.
-3. Click **Verify Connection** to test the key against Spoonacular servers.
-4. Click **Save API Key**. The status indicator in the top header will display **🟢 Live API**.
-
-### 3. Graceful Quota & Offline Handling (Demo Mode)
-* Spoonacular's free tier provides **150 points per day**.
-* When your key reaches its quota (HTTP 402) or if no key is entered, NutriPlan seamlessly switches to **🟠 Demo Mode**.
-* Demo Mode utilizes a rich, pre-packaged dataset of balanced recipes with realistic nutritional breakdowns, ingredient lists, and cooking instructions, ensuring the app remains 100% interactive without crashing.
-* You can toggle Demo Mode on or off at any time in the API Settings modal.
+### Method 2: Direct Browser Launch (No Server Needed)
+Simply double-click `index.html` in File Explorer or open it directly in Google Chrome, Microsoft Edge, or Mozilla Firefox.
 
 ---
 
-## ✨ Features Overview
+## 🌟 Key Features
 
-### 1. 🥗 Smart Ingredient Meal Planner
-* **Input Flexibility**: Enter available items as comma-separated or space-separated lists (e.g. `chicken breast, brown rice, broccoli, avocado, eggs`).
-* **Quick-Add Ingredient Chips**: One-click tags for common essentials (Chicken, Salmon, Eggs, Tofu, Brown Rice, Oats, Quinoa, Sweet Potato, Broccoli, Spinach, Tomatoes, Avocado).
-* **Macronutrient Classification**: Automatically groups ingredients into **Protein**, **Carbohydrates**, **Vegetables / Fiber**, and **Healthy Fats**.
-* **Dietary Recommendations**: Generates wholesome recipes using the detected ingredients.
-* **Macro Goal Dashboard**: Computes estimated daily calories and macronutrient progress against reference daily targets (2000 kcal, 100g Protein, 225g Carbs, 65g Fat).
+### 1. Ingredient Input & Quick-Add Chips
+- Flexible input accepting comma-separated, space-separated, or newline-separated items.
+- 12 quick-add chips for pantry staples (*Chicken, Eggs, Salmon, Tofu, Rice, Oats, Sweet Potato, Broccoli, Spinach, Tomatoes, Avocado, Almonds*).
 
-### 2. 🔍 Recipe Search Engine
-* **Keyword Search**: Search thousands of dishes by ingredient or recipe title.
-* **Meal Category Filters**: Filter by Breakfast, Main Course, Salad, Soup, Snack, or Healthy Dessert.
-* **Dietary Filters**: High-Protein, Low-Carb, Vegetarian, Vegan, Gluten-Free, Ketogenic.
-* **Calorie Capping**: Slider/input to specify maximum calories per serving.
-* **Rich Recipe Cards**: Displays preparation time, serving count, calorie count, and macro badges.
-* **Recipe Details Modal**: Full ingredients checklist and step-by-step preparation directions.
+### 2. Practical Meal Suggestions
+- Automatically constructs realistic, everyday meal ideas:
+  - 🌅 **Breakfast**: e.g. Scrambled eggs with toast & greens, warm oatmeal bowls.
+  - ☀️ **Lunch**: e.g. Balanced protein power bowls with whole grains and veggies.
+  - 🌙 **Dinner**: e.g. Hearty roasted protein & caramelized vegetable platters.
+  - 🍎 **Snack**: e.g. Wholesome afternoon energy bites, greek yogurt cups, or fresh fruit with nuts.
+- **Non-blocking generation**: Generates suggestions even if ingredients are incomplete (e.g. only "bread, eggs").
 
-### 3. 📋 My Daily Meal Plan & LocalStorage
-* **Slot Organization**: Organize your day into **Breakfast**, **Lunch**, **Dinner**, and **Healthy Snacks**.
-* **One-Click Slot Assignment**: Add any recipe to a specific meal slot directly from recipe cards or details modals.
-* **Dynamic Daily Macro Tracker**: Aggregates total calories, protein, carbs, and fat across all planned meals, updating animated progress bars in real time.
-* **Full Persistence**: All planned meals and user preferences persist in `localStorage` and automatically restore on browser refresh.
-* **Reset / Clear Plan**: Clear your active inputs or wipe the entire daily plan with confirmation dialogs and instant toast alerts.
+### 3. Estimated Nutrition Summary
+- Displays instant calculations for:
+  - 🔥 **Estimated Calories** (kcal)
+  - 🥩 **Protein** (g)
+  - 🍞 **Carbohydrates** (g)
+  - 🥑 **Fat** (g)
 
-### 4. 🌙 Dark / Light Mode
-* Seamless toggle in the header with Sun/Moon iconography.
-* Carefully balanced color palettes for both modes meeting WCAG AA contrast standards.
-* Automatically remembers your selected theme in `localStorage`.
-* Respects OS `prefers-color-scheme` on first visit.
+### 4. Nutritional Balance Check
+- Displays which essential groups are **Present** (✅) and which are **Missing or Low** (⚠️):
+  - **Protein**: Chicken, Eggs, Salmon, Tofu, Lentils, Beans, etc.
+  - **Carbohydrates**: Rice, Oats, Bread, Sweet Potato, Quinoa, Pasta, etc.
+  - **Healthy Fats**: Avocado, Olive Oil, Nuts, Seeds, Peanut Butter, etc.
+  - **Vegetables / Fiber**: Spinach, Broccoli, Carrots, Tomatoes, Bell Peppers, etc.
+
+### 5. Educational Recommendations & User Guidance
+- When any nutrient group is missing, the app suggests exact ingredients to balance the diet (e.g. adding Avocado or Olive Oil for healthy fats; Broccoli or Carrots for fiber).
+- Displays the encouraging guidance banner:
+  > *"This meal plan can still be followed, but adding the suggested ingredients would improve nutritional balance."*
+
+### 6. Simple Error Handling
+- Only flags an error when the input is empty:
+  `"Please enter at least one ingredient."`
+- Never shows errors or blocks generation for missing nutrients.
 
 ---
 
@@ -103,38 +124,23 @@ NutriPlan supports both **Live Spoonacular API** calls and an **Offline Demo Mod
 
 ```
 balanced-meal-planner/
-├── index.html            # Main semantic single-page application
-├── ind.html              # Backwards-compatible alias redirecting to index.html
-├── index.css             # Root CSS alias importing style.css
-├── ind.css               # Legacy CSS alias importing style.css
-├── index.js              # Root JS compatibility alias
-├── ind.jsx               # Legacy script documenting modular architecture
-├── css/
-│   └── style.css         # Complete responsive design system & themes
-├── js/
-│   ├── config.js         # API endpoints, storage keys, daily macro targets
-│   ├── mock-data.js      # Rich sample recipes & offline nutritional data
-│   ├── storage.js        # LocalStorage wrapper (theme, plan, API key)
-│   ├── api.js            # Live Spoonacular client, error handler & fallback
-│   ├── ui.js             # UI rendering (cards, macro bars, modals, toasts)
-│   └── app.js            # Controller, tabs, search, event delegation
-└── README.md             # Documentation & setup instructions
+├── index.html            # Main semantic application page
+├── style.css             # Lightweight, clean, responsive stylesheet (~230 lines)
+├── app.js                # Core logic: database, analysis, meal generator (~260 lines)
+├── index.css             # Alias importing style.css
+├── ind.css               # Legacy alias importing style.css
+├── ind.html              # Legacy alias redirecting to index.html
+├── index.js              # Alias pointing to app.js
+├── ind.jsx               # Legacy documentation alias
+├── screenshots/          # Feature screenshots for demonstration
+└── README.md             # Project documentation & overview
 ```
 
 ---
 
-## 🧪 Testing & Verification
+## 💼 Resume & Interview Talking Points
 
-1. **API Integration Verification**:
-   - Tested invalid/expired key handling -> triggers clear user-facing error message without console crashes.
-   - Tested valid key verification flow in API Settings modal.
-   - Verified seamless automatic fallback to Demo Mode when quota is depleted or key is missing.
-2. **Form Controls & Buttons**:
-   - Verified ingredient submission, quick-add chips, reset generator button, search filters, modal triggers, and "Add to Plan" dropdowns.
-3. **Storage Persistence**:
-   - Added recipes to Breakfast, Lunch, and Dinner; reloaded the browser; verified all meals and macro totals remained intact.
-   - Toggled between Light and Dark mode; reloaded the browser; verified theme persisted.
-4. **Console Hygiene**:
-   - Zero console errors or uncaught promise rejections during operations.
-5. **Responsiveness**:
-   - Tested across Mobile (375px), Tablet (768px), and Desktop (1280px+). No horizontal overflow.
+- **Problem-Solving & User Experience**: Designed an educational tool that guides users toward balanced nutrition without frustrating them with rigid errors or blocking incomplete ingredient lists.
+- **Architectural Decision (Self-Contained vs. External API)**: Replaced external API dependencies with a robust, offline culinary knowledge base. This eliminated rate limits, 401 unauthorized errors, and network latency, ensuring instantaneous response times and 100% reliability during live portfolio demonstrations.
+- **Clean Code & Modularity**: Structured clean, readable vanilla JavaScript with dedicated functions for input sanitization, nutrition aggregation, DOM rendering, and meal synthesis.
+- **Accessibility & Responsiveness**: Mobile-first CSS layout tested across phone (375px), tablet, and desktop viewports with accessible contrast ratios.

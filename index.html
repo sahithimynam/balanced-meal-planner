@@ -1,240 +1,115 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NutriPlan - Balanced Meal Planner & Recipe Generator</title>
-    <link rel="stylesheet" href="css/style.css">
+    <title>Balanced Meal Planner - Simple Nutrition &amp; Diet Generator</title>
+    <link rel="stylesheet" href="style.css">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🥗</text></svg>">
 </head>
 <body>
-    <!-- Top Application Header -->
-    <header class="app-header">
-        <div class="container header-inner">
-            <div class="brand">
-                <span class="brand-icon">🥗</span>
-                <div>
-                    <h1 class="brand-title">NutriPlan</h1>
-                    <span class="brand-subtitle">Balanced Meal Planner & Diet Generator</span>
-                </div>
+    <div class="container">
+        <!-- Application Header -->
+        <header class="header">
+            <div class="logo-badge">🥗</div>
+            <h1 class="title">Balanced Meal Planner</h1>
+            <p class="subtitle">
+                Enter your available kitchen ingredients to generate practical meal ideas and learn about balanced nutrition.
+            </p>
+        </header>
+
+        <!-- Ingredient Input Card -->
+        <section class="card">
+            <label for="ingredients-input" class="input-label">Enter available ingredients:</label>
+            <textarea 
+                id="ingredients-input" 
+                class="textarea" 
+                placeholder="Enter ingredients separated by commas or spaces. E.g., chicken, rice, eggs, spinach, tomatoes"
+            ></textarea>
+
+            <div class="chips-label">Quick Add Common Ingredients:</div>
+            <div class="chips-wrap">
+                <button type="button" class="chip-btn" data-item="Chicken">🍗 Chicken</button>
+                <button type="button" class="chip-btn" data-item="Eggs">🥚 Eggs</button>
+                <button type="button" class="chip-btn" data-item="Salmon">🐟 Salmon</button>
+                <button type="button" class="chip-btn" data-item="Tofu">🧈 Tofu</button>
+                <button type="button" class="chip-btn" data-item="Rice">🍚 Rice</button>
+                <button type="button" class="chip-btn" data-item="Oats">🌾 Oats</button>
+                <button type="button" class="chip-btn" data-item="Sweet Potato">🍠 Sweet Potato</button>
+                <button type="button" class="chip-btn" data-item="Broccoli">🥦 Broccoli</button>
+                <button type="button" class="chip-btn" data-item="Spinach">🥬 Spinach</button>
+                <button type="button" class="chip-btn" data-item="Tomatoes">🍅 Tomatoes</button>
+                <button type="button" class="chip-btn" data-item="Avocado">🥑 Avocado</button>
+                <button type="button" class="chip-btn" data-item="Almonds">🥜 Almonds</button>
             </div>
 
-            <div class="header-controls">
-                <div id="api-status-badge" class="status-badge status-demo" title="API Status">
-                    <span class="dot"></span> Demo Mode
-                </div>
-                <button id="api-settings-btn" class="nav-btn" title="Configure Spoonacular API Key">
-                    🔑 <span class="nav-btn-text">API Settings</span>
-                </button>
-                <button id="theme-toggle-btn" class="nav-btn" title="Toggle Light/Dark Theme">
-                    🌙 <span class="nav-btn-text">Dark Mode</span>
-                </button>
-            </div>
-        </div>
-    </header>
-
-    <!-- Main Content Area -->
-    <main class="container">
-        <!-- Navigation Tabs Bar -->
-        <nav class="nav-tabs-bar" aria-label="Main Navigation">
-            <button class="nav-tab-btn active" data-tab="tab-generator">
-                🥗 Ingredient Planner
-            </button>
-            <button class="nav-tab-btn" data-tab="tab-search">
-                🔍 Recipe Search
-            </button>
-            <button class="nav-tab-btn" data-tab="tab-plan">
-                📋 My Daily Plan <span id="plan-count-badge" class="badge-count" style="display: none;">0</span>
-            </button>
-        </nav>
-
-        <!-- TAB 1: INGREDIENT MEAL PLAN GENERATOR -->
-        <section id="tab-generator" class="tab-panel active">
-            <div class="hero-section">
-                <h2 class="hero-title">Smart <span>Balanced Diet</span> Generator</h2>
-                <p class="hero-subtitle">
-                    Enter the ingredients you have in your kitchen. NutriPlan analyzes their macronutrient balance and generates delicious, nutritious meals.
-                </p>
+            <div class="button-row">
+                <button type="button" id="generate-btn" class="btn btn-primary">Generate Meal Plan</button>
+                <button type="button" id="clear-btn" class="btn btn-secondary">Clear</button>
             </div>
 
-            <div class="card-panel">
-                <label for="ingredients-input" class="form-label">Available Ingredients:</label>
-                <div class="textarea-wrap">
-                    <textarea 
-                        id="ingredients-input" 
-                        class="textarea-input" 
-                        placeholder="Enter comma or space separated ingredients (e.g., chicken breast, brown rice, broccoli, avocado, eggs, tomatoes)..."
-                    ></textarea>
-                </div>
-
-                <div class="chips-label">Quick Add Common Ingredients:</div>
-                <div id="quick-chips-container" class="quick-chips-grid"></div>
-
-                <div class="action-row">
-                    <button id="btn-produce-diet" class="btn btn-primary">
-                        ✨ Produce Balanced Diet
-                    </button>
-                    <button id="btn-reset-generator" class="btn btn-outline">
-                        🔄 Reset / Clear
-                    </button>
-                </div>
-            </div>
-
-            <!-- Results Section -->
-            <div id="generator-results" class="hidden">
-                <!-- Diet & Macronutrient Breakdown -->
-                <div id="diet-classification-container"></div>
-                <div id="generator-macro-dashboard"></div>
-
-                <div class="section-title-row">
-                    <h3 class="section-title">🍽️ Recommended Balanced Meals</h3>
-                </div>
-                <div id="generator-recipes-grid" class="recipe-cards-grid"></div>
-            </div>
+            <!-- Error Banner (Only shown if input is empty) -->
+            <div id="error-msg" class="error-box hidden" role="alert"></div>
         </section>
 
-        <!-- TAB 2: RECIPE SEARCH -->
-        <section id="tab-search" class="tab-panel">
-            <div class="hero-section">
-                <h2 class="hero-title">Discover <span>Nutritious Recipes</span></h2>
-                <p class="hero-subtitle">
-                    Explore thousands of wholesome meals powered by the Spoonacular food database. Filter by diet, meal category, and calories.
-                </p>
-            </div>
+        <!-- Results Section (Hidden until generated) -->
+        <main id="results-section" class="card hidden">
+            <!-- 1. Meal Suggestions -->
+            <section style="margin-bottom: 2rem;">
+                <h2 class="section-title">🍽️ Suggested Meals</h2>
+                <div id="meals-grid" class="meals-grid"></div>
+            </section>
 
-            <div class="card-panel">
-                <div class="search-controls-grid">
-                    <div class="search-field">
-                        <label for="search-query-input">Recipe or Ingredient Name</label>
-                        <input type="text" id="search-query-input" placeholder="e.g., grilled salmon, quinoa bowl, pasta, smoothie..." />
+            <!-- 2. Nutritional Analysis -->
+            <section style="margin-bottom: 2rem;">
+                <h2 class="section-title">📊 Estimated Nutrition Summary</h2>
+                <div class="nutrition-grid">
+                    <div class="nutrition-stat">
+                        <span class="stat-label">Estimated Calories</span>
+                        <span id="stat-calories" class="stat-val">0 kcal</span>
                     </div>
-
-                    <div class="search-field">
-                        <label for="search-type-select">Meal Category</label>
-                        <select id="search-type-select">
-                            <option value="all">All Categories</option>
-                            <option value="breakfast">Breakfast</option>
-                            <option value="main course">Main Course</option>
-                            <option value="salad">Salad</option>
-                            <option value="soup">Soup</option>
-                            <option value="snack">Snack</option>
-                            <option value="dessert">Healthy Dessert</option>
-                        </select>
+                    <div class="nutrition-stat">
+                        <span class="stat-label">Protein</span>
+                        <span id="stat-protein" class="stat-val">0g</span>
                     </div>
-
-                    <div class="search-field">
-                        <label for="search-diet-select">Dietary Filter</label>
-                        <select id="search-diet-select">
-                            <option value="all">Any Diet</option>
-                            <option value="high-protein">High Protein</option>
-                            <option value="low-carb">Low Carb</option>
-                            <option value="vegetarian">Vegetarian</option>
-                            <option value="vegan">Vegan</option>
-                            <option value="gluten-free">Gluten Free</option>
-                            <option value="ketogenic">Ketogenic</option>
-                        </select>
+                    <div class="nutrition-stat">
+                        <span class="stat-label">Carbohydrates</span>
+                        <span id="stat-carbs" class="stat-val">0g</span>
                     </div>
-
-                    <div class="search-field">
-                        <label for="search-calories-input">Max Calories: <span id="cal-val-display">Any</span></label>
-                        <input type="number" id="search-calories-input" min="100" max="1500" step="50" placeholder="e.g. 600" />
-                    </div>
-
-                    <div class="search-buttons">
-                        <button id="btn-run-search" class="btn btn-primary">
-                            🔍 Search
-                        </button>
-                        <button id="btn-reset-search" class="btn btn-outline" title="Reset Filters">
-                            🔄
-                        </button>
+                    <div class="nutrition-stat">
+                        <span class="stat-label">Fat</span>
+                        <span id="stat-fat" class="stat-val">0g</span>
                     </div>
                 </div>
-            </div>
+            </section>
 
-            <div class="section-title-row">
-                <h3 class="section-title">🥗 Search Results</h3>
-            </div>
-            <div id="search-results-grid" class="recipe-cards-grid"></div>
-        </section>
-
-        <!-- TAB 3: SAVED DAILY MEAL PLAN -->
-        <section id="tab-plan" class="tab-panel">
-            <div class="section-title-row">
-                <div>
-                    <h2 class="section-title">📋 My Balanced Daily Plan</h2>
-                    <p class="hero-subtitle" style="text-align: left; margin: 0.25rem 0 0 0;">
-                        Track your daily calories and macronutrient breakdown across breakfast, lunch, dinner, and snacks. Saved automatically in your browser.
-                    </p>
+            <!-- 3. Nutritional Balance Check -->
+            <section style="margin-bottom: 1.5rem;">
+                <h2 class="section-title">⚖️ Nutritional Balance Check</h2>
+                <div class="balance-container">
+                    <div class="balance-column">
+                        <h3 class="column-heading present-heading">✅ Present Nutrients</h3>
+                        <ul id="balance-present-list" class="balance-list"></ul>
+                    </div>
+                    <div class="balance-column">
+                        <h3 class="column-heading missing-heading">⚠️ Missing or Low</h3>
+                        <ul id="balance-missing-list" class="balance-list"></ul>
+                    </div>
                 </div>
-                <button id="btn-clear-plan" class="btn btn-danger">
-                    🗑️ Clear Daily Plan
-                </button>
-            </div>
+            </section>
 
-            <!-- Macro Tracker for Saved Plan -->
-            <div id="plan-macro-dashboard" style="margin-top: 1.5rem;"></div>
-
-            <!-- Saved Plan Slots -->
-            <div id="saved-plan-container"></div>
-        </section>
-    </main>
-
-    <!-- Application Footer -->
-    <footer class="app-footer">
-        <div class="container footer-inner">
-            <p><strong>NutriPlan</strong> &mdash; 100% Client-Side Balanced Meal Planner &amp; Diet Generator</p>
-            <p>Powered by HTML5, CSS3, ES6+ JavaScript, and Spoonacular Food API</p>
-        </div>
-    </footer>
-
-    <!-- API Settings Modal -->
-    <div id="api-modal" class="modal-backdrop">
-        <div class="modal-dialog api-settings-dialog">
-            <div class="api-settings-header">
-                <h3>🔑 Spoonacular API Configuration</h3>
-                <button class="modal-close-btn" id="api-modal-close">&times;</button>
-            </div>
-
-            <div class="api-instructions">
-                <p><strong>How to connect your live Spoonacular API:</strong></p>
-                <ol>
-                    <li>Sign up for a free developer account at <a href="https://spoonacular.com/food-api" target="_blank" rel="noopener">spoonacular.com/food-api</a>.</li>
-                    <li>Copy your API key from the Spoonacular dashboard.</li>
-                    <li>Paste your key below and click <strong>Verify Connection</strong>.</li>
-                </ol>
-                <p style="margin-top: 0.5rem; font-size: 0.82rem; color: var(--text-muted);">
-                    <em>Note: Free tier keys receive 150 points/day. If your quota is reached, NutriPlan automatically switches to Demo Mode so your app keeps functioning seamlessly.</em>
-                </p>
-            </div>
-
-            <div class="search-field" style="margin-bottom: 1rem;">
-                <label for="api-key-input">Spoonacular API Key</label>
-                <input type="text" id="api-key-input" placeholder="Paste your 32-character API key here..." autocomplete="off" />
-                <div id="key-status-message" class="key-status"></div>
-            </div>
-
-            <div class="action-row" style="justify-content: space-between; margin-top: 1.5rem;">
-                <button id="btn-demo-mode" class="btn btn-outline">
-                    Toggle Demo Mode
-                </button>
-                <div style="display: flex; gap: 0.5rem;">
-                    <button id="btn-verify-key" class="btn btn-outline">
-                        Verify Connection
-                    </button>
-                    <button id="btn-save-key" class="btn btn-primary">
-                        Save API Key
-                    </button>
+            <!-- 4. Recommendations & User Guidance -->
+            <section id="recommendations-box" class="recommendations-box">
+                <h3 class="recs-heading">💡 Suggestions to Improve Balance:</h3>
+                <div id="recommendations-list" class="recs-grid"></div>
+                <div class="guidance-banner">
+                    ℹ️ <span id="user-guidance-msg">This meal plan can still be followed, but adding the suggested ingredients would improve nutritional balance.</span>
                 </div>
-            </div>
-        </div>
+            </section>
+        </main>
     </div>
 
-    <!-- Scripts (Ordered for dependency flow) -->
-    <script src="js/config.js"></script>
-    <script src="js/mock-data.js"></script>
-    <script src="js/storage.js"></script>
-    <script src="js/api.js"></script>
-    <script src="js/ui.js"></script>
-    <script src="js/app.js"></script>
+    <!-- Application Script -->
+    <script src="app.js"></script>
 </body>
 </html>

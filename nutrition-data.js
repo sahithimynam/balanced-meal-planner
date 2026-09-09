@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Balanced Diet Analyzer - Local Nutrition Dataset
  * Over 250 common kitchen ingredients with standard nutritional values (per 100g serving)
  * Used as automatic fallback when Spoonacular API is unavailable, rate-limited, or offline.
@@ -8,6 +8,11 @@ const LOCAL_NUTRITION_DATABASE = {
     // --------------------------------------------------------------------------
     // PROTEINS & SEAFOOD (High Protein, Variable Fat)
     // --------------------------------------------------------------------------
+    "meat": { name: "Meat", protein: 26.0, carbohydrates: 0.0, fat: 12.0, fiber: 0.0, isVegetable: false },
+    "red meat": { name: "Red Meat", protein: 26.0, carbohydrates: 0.0, fat: 15.0, fiber: 0.0, isVegetable: false },
+    "white meat": { name: "White Meat", protein: 28.0, carbohydrates: 0.0, fat: 5.0, fiber: 0.0, isVegetable: false },
+    "poultry": { name: "Poultry", protein: 27.0, carbohydrates: 0.0, fat: 4.0, fiber: 0.0, isVegetable: false },
+    "seafood": { name: "Seafood", protein: 22.0, carbohydrates: 0.5, fat: 5.0, fiber: 0.0, isVegetable: false },
     "chicken": { name: "Chicken", protein: 27.0, carbohydrates: 0.0, fat: 3.6, fiber: 0.0, isVegetable: false },
     "chicken breast": { name: "Chicken Breast", protein: 31.0, carbohydrates: 0.0, fat: 3.6, fiber: 0.0, isVegetable: false },
     "chicken thigh": { name: "Chicken Thigh", protein: 24.0, carbohydrates: 0.0, fat: 8.0, fiber: 0.0, isVegetable: false },
@@ -146,6 +151,12 @@ const LOCAL_NUTRITION_DATABASE = {
     // --------------------------------------------------------------------------
     // VEGETABLES & FIBER (High Fiber, Micronutrients)
     // --------------------------------------------------------------------------
+    "vegetable": { name: "Vegetables", protein: 2.0, carbohydrates: 5.0, fat: 0.2, fiber: 3.0, isVegetable: true },
+    "vegetables": { name: "Vegetables", protein: 2.0, carbohydrates: 5.0, fat: 0.2, fiber: 3.0, isVegetable: true },
+    "veggies": { name: "Veggies", protein: 2.0, carbohydrates: 5.0, fat: 0.2, fiber: 3.0, isVegetable: true },
+    "greens": { name: "Greens", protein: 2.5, carbohydrates: 4.0, fat: 0.4, fiber: 3.0, isVegetable: true },
+    "leafy greens": { name: "Leafy Greens", protein: 2.5, carbohydrates: 4.0, fat: 0.4, fiber: 3.0, isVegetable: true },
+    "salad": { name: "Salad Greens", protein: 1.5, carbohydrates: 3.0, fat: 0.2, fiber: 2.0, isVegetable: true },
     "spinach": { name: "Spinach", protein: 2.9, carbohydrates: 3.6, fat: 0.4, fiber: 2.2, isVegetable: true },
     "kale": { name: "Kale", protein: 2.9, carbohydrates: 4.4, fat: 1.5, fiber: 4.1, isVegetable: true },
     "lettuce": { name: "Lettuce", protein: 1.4, carbohydrates: 2.9, fat: 0.2, fiber: 1.3, isVegetable: true },

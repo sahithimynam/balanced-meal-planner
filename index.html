@@ -3,113 +3,67 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Balanced Meal Planner - Simple Nutrition &amp; Diet Generator</title>
+    <title>Balanced Diet Analyzer</title>
     <link rel="stylesheet" href="style.css">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🥗</text></svg>">
 </head>
 <body>
     <div class="container">
-        <!-- Application Header -->
+        <!-- Header -->
         <header class="header">
-            <div class="logo-badge">🥗</div>
-            <h1 class="title">Balanced Meal Planner</h1>
-            <p class="subtitle">
-                Enter your available kitchen ingredients to generate practical meal ideas and learn about balanced nutrition.
-            </p>
+            <h1 class="title">Balanced Diet Analyzer</h1>
+            <p class="subtitle">Enter ingredients to evaluate nutritional balance and identify missing nutrient groups.</p>
         </header>
 
-        <!-- Ingredient Input Card -->
+        <!-- Input Card -->
         <section class="card">
             <label for="ingredients-input" class="input-label">Enter available ingredients:</label>
             <textarea 
                 id="ingredients-input" 
                 class="textarea" 
-                placeholder="Enter ingredients separated by commas or spaces. E.g., chicken, rice, eggs, spinach, tomatoes"
+                placeholder="e.g., chicken, rice, eggs, spinach, tomatoes"
             ></textarea>
-
-            <div class="chips-label">Quick Add Common Ingredients:</div>
-            <div class="chips-wrap">
-                <button type="button" class="chip-btn" data-item="Chicken">🍗 Chicken</button>
-                <button type="button" class="chip-btn" data-item="Eggs">🥚 Eggs</button>
-                <button type="button" class="chip-btn" data-item="Salmon">🐟 Salmon</button>
-                <button type="button" class="chip-btn" data-item="Tofu">🧈 Tofu</button>
-                <button type="button" class="chip-btn" data-item="Rice">🍚 Rice</button>
-                <button type="button" class="chip-btn" data-item="Oats">🌾 Oats</button>
-                <button type="button" class="chip-btn" data-item="Sweet Potato">🍠 Sweet Potato</button>
-                <button type="button" class="chip-btn" data-item="Broccoli">🥦 Broccoli</button>
-                <button type="button" class="chip-btn" data-item="Spinach">🥬 Spinach</button>
-                <button type="button" class="chip-btn" data-item="Tomatoes">🍅 Tomatoes</button>
-                <button type="button" class="chip-btn" data-item="Avocado">🥑 Avocado</button>
-                <button type="button" class="chip-btn" data-item="Almonds">🥜 Almonds</button>
-            </div>
-
-            <div class="button-row">
-                <button type="button" id="generate-btn" class="btn btn-primary">Generate Meal Plan</button>
-                <button type="button" id="clear-btn" class="btn btn-secondary">Clear</button>
-            </div>
-
-            <!-- Error Banner (Only shown if input is empty) -->
-            <div id="error-msg" class="error-box hidden" role="alert"></div>
+            <button type="button" id="analyze-btn" class="btn-primary">Analyze</button>
+            <div id="error-msg" class="error-msg hidden" role="alert"></div>
         </section>
 
-        <!-- Results Section (Hidden until generated) -->
+        <!-- Results Section -->
         <main id="results-section" class="card hidden">
-            <!-- 1. Meal Suggestions -->
-            <section style="margin-bottom: 2rem;">
-                <h2 class="section-title">🍽️ Suggested Meals</h2>
-                <div id="meals-grid" class="meals-grid"></div>
+            <!-- 100% Balanced Diet Achieved Banner -->
+            <div id="success-banner" class="success-banner hidden">
+                <div class="success-badge">✓ Balanced Diet Achieved</div>
+                <div class="success-score">Diet Score: 100%</div>
+                <p class="success-message">Your ingredient selection contains all major nutrient groups required for a balanced diet.</p>
+            </div>
+
+            <!-- Partial Score Box (Shown when < 100%) -->
+            <div id="partial-score-box" class="score-box">
+                <span class="score-title">Diet Score:</span>
+                <span id="score-val" class="score-badge">50% Balanced</span>
+            </div>
+
+            <!-- Nutrient Groups Found -->
+            <section style="margin-bottom: 1.25rem;">
+                <h3 class="section-title found-title">Nutrient Groups Found:</h3>
+                <ul id="groups-found-list" class="group-list"></ul>
             </section>
 
-            <!-- 2. Nutritional Analysis -->
-            <section style="margin-bottom: 2rem;">
-                <h2 class="section-title">📊 Estimated Nutrition Summary</h2>
-                <div class="nutrition-grid">
-                    <div class="nutrition-stat">
-                        <span class="stat-label">Estimated Calories</span>
-                        <span id="stat-calories" class="stat-val">0 kcal</span>
-                    </div>
-                    <div class="nutrition-stat">
-                        <span class="stat-label">Protein</span>
-                        <span id="stat-protein" class="stat-val">0g</span>
-                    </div>
-                    <div class="nutrition-stat">
-                        <span class="stat-label">Carbohydrates</span>
-                        <span id="stat-carbs" class="stat-val">0g</span>
-                    </div>
-                    <div class="nutrition-stat">
-                        <span class="stat-label">Fat</span>
-                        <span id="stat-fat" class="stat-val">0g</span>
-                    </div>
-                </div>
+            <!-- Nutrient Groups Missing -->
+            <section id="groups-missing-section" style="margin-bottom: 1.25rem;">
+                <h3 class="section-title missing-title">Nutrient Groups Missing:</h3>
+                <ul id="groups-missing-list" class="group-list"></ul>
             </section>
 
-            <!-- 3. Nutritional Balance Check -->
-            <section style="margin-bottom: 1.5rem;">
-                <h2 class="section-title">⚖️ Nutritional Balance Check</h2>
-                <div class="balance-container">
-                    <div class="balance-column">
-                        <h3 class="column-heading present-heading">✅ Present Nutrients</h3>
-                        <ul id="balance-present-list" class="balance-list"></ul>
-                    </div>
-                    <div class="balance-column">
-                        <h3 class="column-heading missing-heading">⚠️ Missing or Low</h3>
-                        <ul id="balance-missing-list" class="balance-list"></ul>
-                    </div>
-                </div>
-            </section>
-
-            <!-- 4. Recommendations & User Guidance -->
-            <section id="recommendations-box" class="recommendations-box">
-                <h3 class="recs-heading">💡 Suggestions to Improve Balance:</h3>
-                <div id="recommendations-list" class="recs-grid"></div>
-                <div class="guidance-banner">
-                    ℹ️ <span id="user-guidance-msg">This meal plan can still be followed, but adding the suggested ingredients would improve nutritional balance.</span>
+            <!-- Recommendations -->
+            <section id="recommendations-section">
+                <div id="recommendations-box" class="recommendations-box">
+                    <h3 class="section-title recs-title" style="margin-top: 0; margin-bottom: 0.65rem;">Recommendations:</h3>
+                    <div id="recommendations-list"></div>
                 </div>
             </section>
         </main>
     </div>
 
-    <!-- Application Script -->
     <script src="app.js"></script>
 </body>
 </html>

@@ -1,122 +1,91 @@
-# 🥗 Balanced Meal Planner
+# 🥗 Balanced Diet Analyzer
 
-A clean, beginner-friendly frontend web application built with **HTML5, CSS3, and Vanilla JavaScript**. The application allows users to enter whatever ingredients they have at home, generates practical everyday meal suggestions (Breakfast, Lunch, Dinner, Snack), estimates nutritional values, and educates users on balanced eating by identifying missing nutrient groups with actionable ingredient recommendations.
-
----
-
-## 🎯 Project Overview & Objective
-
-Many people struggle to figure out what to cook with the ingredients currently sitting in their kitchen, often leading to nutritionally skewed meals.
-
-The **Balanced Meal Planner** solves this by:
-1. Turning available kitchen ingredients into realistic meal ideas.
-2. Breaking down the four core nutritional pillars (**Protein**, **Carbohydrates**, **Healthy Fats**, and **Vegetables / Fiber**).
-3. Educating users on what their meal lacks and suggesting exact grocery items to improve diet quality.
+A clean, minimalist frontend web application built with **HTML5, CSS3, and Vanilla JavaScript**. The application evaluates user-entered ingredients, categorizes them into the four essential nutritional pillars, calculates a **Diet Score**, highlights **Nutrient Groups Found** versus **Nutrient Groups Missing**, and provides actionable **Recommendations** to balance the diet.
 
 ---
 
-## 🔄 Application Architecture (Input ➔ Processing ➔ Output)
+## 🎯 Purpose & Functionality
 
-The application follows a clean, single-page client-side architecture with zero external dependencies:
+The purpose of this project is to analyze nutritional balance and educate users on balanced eating without confusing them with complex recipe generation or overwhelming dashboards.
 
-```
-+------------------------------------------------------------------+
-| INPUT                                                            |
-| User enters available ingredients (e.g., "chicken, rice, eggs")  |
-+------------------------------------------------------------------+
-                                |
-                                v
-+------------------------------------------------------------------+
-| PROCESSING (Client-Side Vanilla JS)                              |
-| 1. Tokenizes & cleans ingredient list (commas, spaces, newlines) |
-| 2. Maps items against built-in nutritional knowledge base        |
-| 3. Categorizes into: Protein, Carbs, Healthy Fats, Veggies/Fiber |
-| 4. Calculates estimated macronutrients (Calories, P, C, F)       |
-| 5. Identifies which nutrient groups are Present vs. Missing      |
-| 6. Generates Breakfast, Lunch, Dinner, and Snack suggestions     |
-+------------------------------------------------------------------+
-                                |
-                                v
-+------------------------------------------------------------------+
-| OUTPUT                                                           |
-| 1. 🍽️ Practical Meal Suggestions (Breakfast, Lunch, Dinner, Snack)|
-| 2. 📊 Estimated Nutrition Summary (Calories, Protein, Carbs, Fat)|
-| 3. ⚖️ Nutritional Balance Check (✅ Present vs ⚠️ Missing/Low)   |
-| 4. 💡 Ingredient Recommendations for missing nutrient groups    |
-| 5. ℹ️ Guidance Note ("This plan can still be followed...")       |
-+------------------------------------------------------------------+
-```
+### Core Nutritional Pillars Analyzed:
+1. **Protein**: e.g., Chicken, Eggs, Salmon, Tofu, Paneer, Lentils, Chickpeas.
+2. **Carbohydrates**: e.g., Rice, Oats, Bread, Sweet Potato, Quinoa, Pasta.
+3. **Vegetables / Fiber**: e.g., Broccoli, Spinach, Carrot, Tomatoes, Bell Pepper.
+4. **Healthy Fats**: e.g., Avocado, Almonds, Olive Oil, Walnuts, Chia Seeds.
+
+---
+
+## 🔄 Application Logic (Input ➔ Processing ➔ Output)
+
+### 1. Input:
+The user enters available kitchen ingredients (separated by commas, spaces, or newlines) into a single input box.
+
+### 2. Processing:
+- Vanilla JavaScript normalizes and tokenizes the entered ingredients.
+- Cross-references each ingredient against a built-in culinary classification dictionary.
+- Identifies which of the 4 groups are present and which are missing.
+- Calculates the **Diet Score**:
+  - 1 group = **25% Balanced**
+  - 2 groups = **50% Balanced**
+  - 3 groups = **75% Balanced**
+  - 4 groups = **100% Balanced**
+
+### 3. Output:
+
+#### Scenario A: When Nutrient Groups Are Missing (< 100%)
+- **Diet Score**: `${score}% Balanced` (e.g. `50% Balanced`)
+- **Nutrient Groups Found**:
+  - ✓ Protein
+  - ✓ Carbohydrates
+- **Nutrient Groups Missing**:
+  - ⚠ Healthy Fats
+  - ⚠ Vegetables/Fiber
+- **Recommendations**:
+  - **Vegetables/Fiber**: Broccoli, Spinach, Carrot
+  - **Healthy Fats**: Avocado, Almonds, Olive Oil
+
+#### Scenario B: When All 4 Nutrient Groups Are Present (100%)
+- **Success Banner**:
+  - `✓ Balanced Diet Achieved`
+  - `Diet Score: 100%`
+- **Message**:
+  > *"Your ingredient selection contains all major nutrient groups required for a balanced diet."*
+- **Nutrient Groups Found**:
+  - ✓ Protein
+  - ✓ Carbohydrates
+  - ✓ Vegetables/Fiber
+  - ✓ Healthy Fats
+
+#### Scenario C: Empty Input Validation
+- Only triggers an error when no ingredients are entered:
+  `"Please enter at least one ingredient."`
 
 ---
 
 ## 🛠️ Technology Stack
 
-- **HTML5**: Semantic, accessible markup (`<header>`, `<section>`, `<main>`, `<textarea>`, `<button>`).
-- **CSS3**: Clean, responsive styling using modern Flexbox, CSS Grid, and custom variables. Zero bulky CSS frameworks.
-- **Vanilla JavaScript (ES6+)**: Modular, readable functions handling DOM events, string parsing, nutritional analysis, and dynamic card generation.
-- **Dependencies**: None. 100% self-contained client-side application. No Node.js, Express, React, or external API keys required.
+- **HTML5**: Semantic and accessible markup.
+- **CSS3**: Lightweight, modern responsive stylesheet with flexbox and card styling.
+- **Vanilla JavaScript**: Pure ES6+ client-side logic.
+- **Zero Dependencies**: No React, Node.js, Express, build tools, or external API keys.
 
 ---
 
-## 🚀 Step-by-Step Guide to Run Locally
+## 🚀 How to Run Locally
 
-### Method 1: Using Python Static Server (Recommended)
-1. Open PowerShell or Command Prompt.
-2. Navigate to the project directory:
-   ```bash
-   cd "C:\Users\krishna sahithi\.gemini\antigravity\scratch\balanced-meal-planner"
-   ```
-3. Start the local server:
-   ```bash
-   python -m http.server 8080
-   ```
-4. Open your browser and navigate to:
-   ```text
-   http://localhost:8080
-   ```
+### Option 1: Python Static Server (Recommended)
+```bash
+# Navigate to the project folder
+cd "C:\Users\krishna sahithi\.gemini\antigravity\scratch\balanced-meal-planner"
 
-### Method 2: Direct Browser Launch (No Server Needed)
-Simply double-click `index.html` in File Explorer or open it directly in Google Chrome, Microsoft Edge, or Mozilla Firefox.
+# Start local server
+python -m http.server 8080
+```
+Open **http://localhost:8080** in your web browser.
 
----
-
-## 🌟 Key Features
-
-### 1. Ingredient Input & Quick-Add Chips
-- Flexible input accepting comma-separated, space-separated, or newline-separated items.
-- 12 quick-add chips for pantry staples (*Chicken, Eggs, Salmon, Tofu, Rice, Oats, Sweet Potato, Broccoli, Spinach, Tomatoes, Avocado, Almonds*).
-
-### 2. Practical Meal Suggestions
-- Automatically constructs realistic, everyday meal ideas:
-  - 🌅 **Breakfast**: e.g. Scrambled eggs with toast & greens, warm oatmeal bowls.
-  - ☀️ **Lunch**: e.g. Balanced protein power bowls with whole grains and veggies.
-  - 🌙 **Dinner**: e.g. Hearty roasted protein & caramelized vegetable platters.
-  - 🍎 **Snack**: e.g. Wholesome afternoon energy bites, greek yogurt cups, or fresh fruit with nuts.
-- **Non-blocking generation**: Generates suggestions even if ingredients are incomplete (e.g. only "bread, eggs").
-
-### 3. Estimated Nutrition Summary
-- Displays instant calculations for:
-  - 🔥 **Estimated Calories** (kcal)
-  - 🥩 **Protein** (g)
-  - 🍞 **Carbohydrates** (g)
-  - 🥑 **Fat** (g)
-
-### 4. Nutritional Balance Check
-- Displays which essential groups are **Present** (✅) and which are **Missing or Low** (⚠️):
-  - **Protein**: Chicken, Eggs, Salmon, Tofu, Lentils, Beans, etc.
-  - **Carbohydrates**: Rice, Oats, Bread, Sweet Potato, Quinoa, Pasta, etc.
-  - **Healthy Fats**: Avocado, Olive Oil, Nuts, Seeds, Peanut Butter, etc.
-  - **Vegetables / Fiber**: Spinach, Broccoli, Carrots, Tomatoes, Bell Peppers, etc.
-
-### 5. Educational Recommendations & User Guidance
-- When any nutrient group is missing, the app suggests exact ingredients to balance the diet (e.g. adding Avocado or Olive Oil for healthy fats; Broccoli or Carrots for fiber).
-- Displays the encouraging guidance banner:
-  > *"This meal plan can still be followed, but adding the suggested ingredients would improve nutritional balance."*
-
-### 6. Simple Error Handling
-- Only flags an error when the input is empty:
-  `"Please enter at least one ingredient."`
-- Never shows errors or blocks generation for missing nutrients.
+### Option 2: Direct File Launch
+Double-click `index.html` in Windows File Explorer to open directly in Google Chrome, Microsoft Edge, or Mozilla Firefox.
 
 ---
 
@@ -124,23 +93,21 @@ Simply double-click `index.html` in File Explorer or open it directly in Google 
 
 ```
 balanced-meal-planner/
-├── index.html            # Main semantic application page
-├── style.css             # Lightweight, clean, responsive stylesheet (~230 lines)
-├── app.js                # Core logic: database, analysis, meal generator (~260 lines)
-├── index.css             # Alias importing style.css
-├── ind.css               # Legacy alias importing style.css
+├── index.html            # Main interface (Title, 1 Input, 1 Button, 1 Results area)
+├── style.css             # Clean modern stylesheet (~180 lines)
+├── app.js                # Food classification & scoring engine (~220 lines)
 ├── ind.html              # Legacy alias redirecting to index.html
-├── index.js              # Alias pointing to app.js
-├── ind.jsx               # Legacy documentation alias
-├── screenshots/          # Feature screenshots for demonstration
-└── README.md             # Project documentation & overview
+├── index.css / ind.css   # Aliases importing style.css
+├── index.js / ind.jsx    # Aliases loading app.js
+├── screenshots/          # Visual proof screenshots
+└── README.md             # Project documentation
 ```
 
 ---
 
 ## 💼 Resume & Interview Talking Points
 
-- **Problem-Solving & User Experience**: Designed an educational tool that guides users toward balanced nutrition without frustrating them with rigid errors or blocking incomplete ingredient lists.
-- **Architectural Decision (Self-Contained vs. External API)**: Replaced external API dependencies with a robust, offline culinary knowledge base. This eliminated rate limits, 401 unauthorized errors, and network latency, ensuring instantaneous response times and 100% reliability during live portfolio demonstrations.
-- **Clean Code & Modularity**: Structured clean, readable vanilla JavaScript with dedicated functions for input sanitization, nutrition aggregation, DOM rendering, and meal synthesis.
-- **Accessibility & Responsiveness**: Mobile-first CSS layout tested across phone (375px), tablet, and desktop viewports with accessible contrast ratios.
+- **Focused Problem Definition**: Solves a specific problem (evaluating diet balance) with a minimalist, distraction-free UI.
+- **Clear Architectural Pipeline**: Demonstrates an Input ➔ Processing ➔ Output workflow implemented in pure vanilla JavaScript.
+- **Zero Latency / 100% Reliability**: Completely self-contained client-side logic ensures immediate execution with no external API rate limits or network failures.
+- **User-Centric Feedback**: Provides positive reinforcement when all 4 groups are met, and actionable, specific grocery recommendations when nutrients are missing.

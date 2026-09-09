@@ -1,6 +1,13 @@
-/**
+﻿/**
  * Balanced Diet Analyzer
- * Pure Spoonacular API Integration & Dynamic Nutrient Analysis
+ * Spoonacular API with Automatic Local Nutrition Fallback
+ * 
+ * Workflow:
+ * 1. First attempts Spoonacular API to retrieve dynamic ingredient nutrition.
+ * 2. If Spoonacular returns 401, 402, network error, or ingredient not found:
+ *    Automatically falls back to local nutrition dataset (250+ ingredients).
+ * 3. Never shows API errors unless both Spoonacular and local lookup fail.
+ * 4. Always generates a diet analysis whenever at least one ingredient can be evaluated.
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -28,7 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
         'healthy_fats': 'Healthy Fats'
     };
 
-    // Standard fallback recommendations from config or defaults
+    // Standard recommendations for missing nutrient groups
     const RECOMMENDATIONS = (window.CONFIG && window.CONFIG.RECOMMENDATIONS) || {
         'vegetables_fiber': {
             label: 'Vegetables/Fiber',
@@ -65,12 +72,12 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     /* ==========================================================================
-       Main Analysis Handler (Spoonacular-Powered)
+       Main Analysis Function
        ========================================================================== */
     async function handleAnalyze(shouldScroll = false) {
         const rawText = ingredientsInput.value.trim();
 
-        // Validation: User entered nothing
+        // Validation: Empty input check
         if (!rawText) {
             showError('Please enter at least one ingredient.');
             resultsSection.classList.add('hidden');
@@ -88,7 +95,6 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // Set Loading State
         setLoading(true);
 
         try {
@@ -102,24 +108,11 @@ document.addEventListener('DOMContentLoaded', () => {
             const notFoundItems = [];
             let analyzedCount = 0;
 
-            // Check if visual demo mode is triggered via URL parameter for testing
-            const urlParams = new URLSearchParams(window.location.search);
-            const isDemo = urlParams.has('demo');
-
+            // Analyze each ingredient with Spoonacular -> Local Fallback
             for (const item of items) {
-                try {
-                    let nutrition;
-                    if (isDemo) {
-                        nutrition = getDemoNutrition(item);
-                    } else {
-                        nutrition = await fetchSpoonacularNutrition(item);
-                    }
+                const nutrition = await getNutritionWithFallback(item);
 
-                    if (!nutrition) {
-                        notFoundItems.push(item);
-                        continue;
-                    }
-
+                if (nutrition) {
                     // Dynamically classify into groups using nutrient thresholds
                     const groups = classifyNutrientGroups(nutrition);
                     groups.forEach(groupKey => {
@@ -127,21 +120,14 @@ document.addEventListener('DOMContentLoaded', () => {
                             classified[groupKey].push(nutrition.name);
                         }
                     });
-
                     analyzedCount++;
-                } catch (itemErr) {
-                    if (itemErr.type === 'API_UNAVAILABLE') {
-                        // Critical API failure (e.g. 401 unauthorized, 402 quota exceeded)
-                        throw itemErr;
-                    } else if (itemErr.type === 'NOT_FOUND') {
-                        notFoundItems.push(item);
-                    } else {
-                        notFoundItems.push(item);
-                    }
+                } else {
+                    notFoundItems.push(item);
                 }
             }
 
-            // Handle ingredient not found errors
+            // Error & Status Handling:
+            // "Do not show API errors to the user unless both API and local analysis fail."
             if (analyzedCount === 0) {
                 if (notFoundItems.length > 0) {
                     showError(`Ingredient not found: ${notFoundItems.map(i => `"${i}"`).join(', ')}. Unable to analyze ingredient.`);
@@ -151,7 +137,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 resultsSection.classList.add('hidden');
                 return;
             } else if (notFoundItems.length > 0) {
-                showError(`Ingredient not found: ${notFoundItems.map(i => `"${i}"`).join(', ')}. Analyzed available ingredients.`);
+                // If some items succeeded and some failed, notify gently without breaking analysis
+                showError(`Ingredient not recognized: ${notFoundItems.map(i => `"${i}"`).join(', ')}. Analyzed available ingredients.`);
+            } else {
+                hideError();
             }
 
             // Determine Found vs Missing groups
@@ -180,16 +169,36 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
         } catch (err) {
-            console.error('Analysis error:', err);
-            if (err.type === 'API_UNAVAILABLE') {
-                showError(err.message);
-            } else {
-                showError(err.message || 'API unavailable. Unable to analyze ingredient.');
-            }
+            console.error('Unexpected analysis failure:', err);
+            showError('Unable to analyze ingredient.');
             resultsSection.classList.add('hidden');
         } finally {
             setLoading(false);
         }
+    }
+
+    /* ==========================================================================
+       Nutrition Fetching with Seamless Automatic Local Fallback
+       ========================================================================== */
+    async function getNutritionWithFallback(ingredientName) {
+        let nutrition = null;
+
+        // 1. First attempt Spoonacular API
+        try {
+            nutrition = await fetchSpoonacularNutrition(ingredientName);
+        } catch (apiErr) {
+            // Spoonacular failed (401 unauthorized, 402 quota exceeded, network error, or ingredient not found)
+            // Log for diagnostics, but do not show error to user — seamlessly fall back
+            // console.warn(`Spoonacular unavailable for "${ingredientName}":`, apiErr.message);
+            nutrition = null;
+        }
+
+        // 2. If Spoonacular was unavailable, failed, or returned nothing, look up in local dataset
+        if (!nutrition) {
+            nutrition = lookupLocalNutrition(ingredientName);
+        }
+
+        return nutrition;
     }
 
     /* ==========================================================================
@@ -199,78 +208,44 @@ document.addEventListener('DOMContentLoaded', () => {
         const apiKey = (window.CONFIG && window.CONFIG.SPOONACULAR_API_KEY) || '';
         const baseUrl = (window.CONFIG && window.CONFIG.API_BASE_URL) || 'https://api.spoonacular.com';
 
-        if (!apiKey) {
-            const err = new Error('API unavailable: Spoonacular API key is missing.');
-            err.type = 'API_UNAVAILABLE';
-            throw err;
+        if (!apiKey || apiKey === 'YOUR_SPOONACULAR_API_KEY') {
+            throw new Error('API unavailable: No Spoonacular API key provided.');
         }
 
-        // 1. Search for ingredient ID
+        // 1. Search for ingredient
         const searchUrl = `${baseUrl}/food/ingredients/search?query=${encodeURIComponent(ingredientName)}&number=1&apiKey=${apiKey}`;
-        let searchRes;
-        try {
-            searchRes = await fetch(searchUrl);
-        } catch (netErr) {
-            const err = new Error('API unavailable: Network connection to Spoonacular failed.');
-            err.type = 'API_UNAVAILABLE';
-            throw err;
-        }
+        const searchRes = await fetch(searchUrl);
 
         if (searchRes.status === 401 || searchRes.status === 403) {
-            const err = new Error('API unavailable: Invalid or unauthorized Spoonacular API key.');
-            err.type = 'API_UNAVAILABLE';
-            throw err;
+            throw new Error('API unavailable: Invalid or unauthorized Spoonacular API key.');
         }
-
         if (searchRes.status === 402) {
-            const err = new Error('API unavailable: Spoonacular daily API quota exceeded.');
-            err.type = 'API_UNAVAILABLE';
-            throw err;
+            throw new Error('API unavailable: Spoonacular daily API quota exceeded.');
         }
-
         if (!searchRes.ok) {
-            const err = new Error(`API unavailable: Spoonacular returned status ${searchRes.status}.`);
-            err.type = 'API_UNAVAILABLE';
-            throw err;
+            throw new Error(`API unavailable: HTTP ${searchRes.status}`);
         }
 
         const searchData = await searchRes.json();
         if (!searchData.results || searchData.results.length === 0) {
-            const err = new Error(`Ingredient not found: "${ingredientName}"`);
-            err.type = 'NOT_FOUND';
-            throw err;
+            throw new Error(`Ingredient not found: "${ingredientName}"`);
         }
 
         const ingId = searchData.results[0].id;
         const matchedName = searchData.results[0].name || ingredientName;
 
-        // 2. Fetch Detailed Nutrition Information for 100g / standard serving
+        // 2. Fetch detailed nutrition (100g basis)
         const infoUrl = `${baseUrl}/food/ingredients/${ingId}/information?amount=100&unit=grams&apiKey=${apiKey}`;
-        let infoRes;
-        try {
-            infoRes = await fetch(infoUrl);
-        } catch (netErr) {
-            const err = new Error('API unavailable: Network connection to Spoonacular failed.');
-            err.type = 'API_UNAVAILABLE';
-            throw err;
-        }
+        const infoRes = await fetch(infoUrl);
 
         if (infoRes.status === 401 || infoRes.status === 403) {
-            const err = new Error('API unavailable: Invalid or unauthorized Spoonacular API key.');
-            err.type = 'API_UNAVAILABLE';
-            throw err;
+            throw new Error('API unavailable: Invalid or unauthorized Spoonacular API key.');
         }
-
         if (infoRes.status === 402) {
-            const err = new Error('API unavailable: Spoonacular daily API quota exceeded.');
-            err.type = 'API_UNAVAILABLE';
-            throw err;
+            throw new Error('API unavailable: Spoonacular daily API quota exceeded.');
         }
-
         if (!infoRes.ok) {
-            const err = new Error(`Unable to analyze ingredient: "${ingredientName}".`);
-            err.type = 'UNABLE_TO_ANALYZE';
-            throw err;
+            throw new Error(`Unable to analyze ingredient: "${ingredientName}".`);
         }
 
         const infoData = await infoRes.json();
@@ -302,6 +277,39 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     /* ==========================================================================
+       Local Nutrition Lookup (250+ Ingredients)
+       ========================================================================== */
+    function lookupLocalNutrition(item) {
+        const db = window.LOCAL_NUTRITION_DATABASE || {};
+        const lower = item.trim().toLowerCase();
+
+        // 1. Direct match
+        if (db[lower]) {
+            return db[lower];
+        }
+
+        // 2. Singular/plural match (e.g. "eggs" -> "egg", "carrots" -> "carrot")
+        const singular = lower.endsWith('s') ? lower.slice(0, -1) : lower;
+        if (db[singular]) {
+            return db[singular];
+        }
+        const plural = lower + 's';
+        if (db[plural]) {
+            return db[plural];
+        }
+
+        // 3. Substring / partial match (sorted by length descending for specificity)
+        const keys = Object.keys(db).sort((a, b) => b.length - a.length);
+        for (const key of keys) {
+            if (lower.includes(key) || key.includes(lower)) {
+                return db[key];
+            }
+        }
+
+        return null;
+    }
+
+    /* ==========================================================================
        Threshold-Based Dynamic Classification
        ========================================================================== */
     function classifyNutrientGroups(nutrition) {
@@ -314,12 +322,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const groups = [];
 
-        // An ingredient may qualify for multiple groups based on thresholds:
-        // Fish -> Protein (>= 5g) + Healthy Fats (>= 4.5g)
-        // Eggs -> Protein (>= 5g) + Healthy Fats (>= 4.5g)
-        // Paneer -> Protein (>= 5g) + Healthy Fats (>= 4.5g)
-        // Chickpeas -> Protein (>= 5g) + Carbohydrates (>= 10g)
-        // Avocado -> Healthy Fats (>= 4.5g) + Fiber/Vegetables (>= 2g)
+        // Dynamic threshold evaluation:
+        // An ingredient may belong to multiple groups (e.g., Fish -> Protein + Fats, Chickpeas -> Protein + Carbs + Fiber)
         if (nutrition.protein >= thresholds.protein) {
             groups.push('protein');
         }
@@ -337,58 +341,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         return groups;
-    }
-
-    /* ==========================================================================
-       Demo Nutrition Data (For automated headless verification & unit testing)
-       ========================================================================== */
-    function getDemoNutrition(item) {
-        const lower = item.toLowerCase();
-        // Dynamic nutritional values per 100g serving
-        if (lower.includes('fish') || lower.includes('salmon')) {
-            return { name: 'Fish', protein: 20.0, carbohydrates: 0.0, fat: 12.0, fiber: 0.0, isVegetable: false };
-        }
-        if (lower.includes('egg')) {
-            return { name: 'Eggs', protein: 12.6, carbohydrates: 1.1, fat: 9.5, fiber: 0.0, isVegetable: false };
-        }
-        if (lower.includes('paneer')) {
-            return { name: 'Paneer', protein: 18.0, carbohydrates: 3.5, fat: 20.0, fiber: 0.0, isVegetable: false };
-        }
-        if (lower.includes('chickpea') || lower.includes('chana') || lower.includes('garbanzo')) {
-            return { name: 'Chickpeas', protein: 8.9, carbohydrates: 27.4, fat: 2.6, fiber: 7.6, isVegetable: false };
-        }
-        if (lower.includes('avocado')) {
-            return { name: 'Avocado', protein: 2.0, carbohydrates: 8.5, fat: 14.7, fiber: 6.7, isVegetable: true };
-        }
-        if (lower.includes('chicken')) {
-            return { name: 'Chicken', protein: 27.0, carbohydrates: 0.0, fat: 3.6, fiber: 0.0, isVegetable: false };
-        }
-        if (lower.includes('rice')) {
-            return { name: 'Rice', protein: 2.7, carbohydrates: 28.2, fat: 0.3, fiber: 0.4, isVegetable: false };
-        }
-        if (lower.includes('spinach')) {
-            return { name: 'Spinach', protein: 2.9, carbohydrates: 3.6, fat: 0.4, fiber: 2.4, isVegetable: true };
-        }
-        if (lower.includes('broccoli')) {
-            return { name: 'Broccoli', protein: 2.8, carbohydrates: 6.6, fat: 0.4, fiber: 2.6, isVegetable: true };
-        }
-        if (lower.includes('carrot')) {
-            return { name: 'Carrot', protein: 0.9, carbohydrates: 9.6, fat: 0.2, fiber: 2.8, isVegetable: true };
-        }
-        if (lower.includes('almond') || lower.includes('nut')) {
-            return { name: 'Almonds', protein: 21.2, carbohydrates: 21.6, fat: 49.9, fiber: 12.5, isVegetable: false };
-        }
-        if (lower.includes('olive oil') || lower.includes('oil')) {
-            return { name: 'Olive Oil', protein: 0.0, carbohydrates: 0.0, fat: 100.0, fiber: 0.0, isVegetable: false };
-        }
-        if (lower.includes('oat')) {
-            return { name: 'Oats', protein: 16.9, carbohydrates: 66.3, fat: 6.9, fiber: 10.6, isVegetable: false };
-        }
-        if (lower.includes('unknown') || lower.includes('xyz')) {
-            return null; // Triggers Ingredient not found
-        }
-
-        return { name: capitalize(item), protein: 0, carbohydrates: 0, fat: 0, fiber: 0, isVegetable: false };
     }
 
     /* ==========================================================================
@@ -492,24 +444,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     /* ==========================================================================
-       Visual Test & Demo Parameter Support
+       Deep Link & Automated Test URL Parameter Support
        ========================================================================== */
     const params = new URLSearchParams(window.location.search);
-    if (params.get('demo') === '50') {
-        ingredientsInput.value = 'chicken, rice';
-        handleAnalyze(false);
-    } else if (params.get('demo') === '100') {
-        ingredientsInput.value = 'chicken, rice, spinach, avocado';
-        handleAnalyze(false);
-    } else if (params.get('demo') === 'multi') {
-        // Tests multi-group ingredients (fish, chickpeas)
-        ingredientsInput.value = 'fish, chickpeas';
-        handleAnalyze(false);
-    } else if (params.get('demo') === 'error') {
-        ingredientsInput.value = '';
-        handleAnalyze(false);
-    } else if (params.get('live') === 'chicken') {
-        ingredientsInput.value = 'chicken';
+    if (params.get('input')) {
+        ingredientsInput.value = params.get('input');
         handleAnalyze(false);
     }
 });

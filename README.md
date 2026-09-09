@@ -39,3 +39,5 @@ balanced-meal-planner/
 ├── app.js                # Spoonacular fetch, threshold classification, and rendering
 └── screenshots/          # End-to-end verification screenshots
 ```
+## Live Demo
+https://balanced-diet-analyzer.onrender.com

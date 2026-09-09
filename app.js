@@ -1,9 +1,6 @@
 /**
  * Balanced Diet Analyzer
- * Clean, lightweight vanilla JavaScript application.
- * 
- * Analyzes entered ingredients, classifies them into the 4 core nutrient groups,
- * calculates the Diet Score, and provides targeted recommendations.
+ * Pure Spoonacular API Integration & Dynamic Nutrient Analysis
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -23,84 +20,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const recommendationsSection = document.getElementById('recommendations-section');
     const recommendationsList = document.getElementById('recommendations-list');
 
-    // 4 Core Nutrient Groups Database
-    const INGREDIENT_DATABASE = {
-        // Protein
-        'chicken': { name: 'Chicken', group: 'protein' },
-        'chicken breast': { name: 'Chicken Breast', group: 'protein' },
-        'eggs': { name: 'Eggs', group: 'protein' },
-        'egg': { name: 'Egg', group: 'protein' },
-        'salmon': { name: 'Salmon', group: 'protein' },
-        'fish': { name: 'Fish', group: 'protein' },
-        'tofu': { name: 'Tofu', group: 'protein' },
-        'turkey': { name: 'Turkey', group: 'protein' },
-        'tuna': { name: 'Tuna', group: 'protein' },
-        'paneer': { name: 'Paneer', group: 'protein' },
-        'lentils': { name: 'Lentils', group: 'protein' },
-        'dal': { name: 'Dal', group: 'protein' },
-        'chickpeas': { name: 'Chickpeas', group: 'protein' },
-        'beans': { name: 'Beans', group: 'protein' },
-        'beef': { name: 'Beef', group: 'protein' },
-        'shrimp': { name: 'Shrimp', group: 'protein' },
-        'yogurt': { name: 'Yogurt', group: 'protein' },
-        'greek yogurt': { name: 'Greek Yogurt', group: 'protein' },
-
-        // Carbohydrates
-        'rice': { name: 'Rice', group: 'carbohydrates' },
-        'brown rice': { name: 'Brown Rice', group: 'carbohydrates' },
-        'white rice': { name: 'White Rice', group: 'carbohydrates' },
-        'oats': { name: 'Oats', group: 'carbohydrates' },
-        'oatmeal': { name: 'Oatmeal', group: 'carbohydrates' },
-        'bread': { name: 'Bread', group: 'carbohydrates' },
-        'potato': { name: 'Potato', group: 'carbohydrates' },
-        'potatoes': { name: 'Potatoes', group: 'carbohydrates' },
-        'sweet potato': { name: 'Sweet Potato', group: 'carbohydrates' },
-        'sweet potatoes': { name: 'Sweet Potatoes', group: 'carbohydrates' },
-        'pasta': { name: 'Pasta', group: 'carbohydrates' },
-        'quinoa': { name: 'Quinoa', group: 'carbohydrates' },
-        'roti': { name: 'Roti', group: 'carbohydrates' },
-        'chapati': { name: 'Chapati', group: 'carbohydrates' },
-        'noodles': { name: 'Noodles', group: 'carbohydrates' },
-        'corn': { name: 'Corn', group: 'carbohydrates' },
-
-        // Vegetables / Fiber
-        'broccoli': { name: 'Broccoli', group: 'vegetables_fiber' },
-        'spinach': { name: 'Spinach', group: 'vegetables_fiber' },
-        'carrot': { name: 'Carrot', group: 'vegetables_fiber' },
-        'carrots': { name: 'Carrots', group: 'vegetables_fiber' },
-        'tomatoes': { name: 'Tomatoes', group: 'vegetables_fiber' },
-        'tomato': { name: 'Tomato', group: 'vegetables_fiber' },
-        'cucumber': { name: 'Cucumber', group: 'vegetables_fiber' },
-        'bell pepper': { name: 'Bell Pepper', group: 'vegetables_fiber' },
-        'peppers': { name: 'Peppers', group: 'vegetables_fiber' },
-        'onion': { name: 'Onion', group: 'vegetables_fiber' },
-        'onions': { name: 'Onions', group: 'vegetables_fiber' },
-        'garlic': { name: 'Garlic', group: 'vegetables_fiber' },
-        'mushrooms': { name: 'Mushrooms', group: 'vegetables_fiber' },
-        'cabbage': { name: 'Cabbage', group: 'vegetables_fiber' },
-        'lettuce': { name: 'Lettuce', group: 'vegetables_fiber' },
-        'cauliflower': { name: 'Cauliflower', group: 'vegetables_fiber' },
-        'peas': { name: 'Peas', group: 'vegetables_fiber' },
-        'apple': { name: 'Apple', group: 'vegetables_fiber' },
-        'banana': { name: 'Banana', group: 'vegetables_fiber' },
-        'berries': { name: 'Berries', group: 'vegetables_fiber' },
-
-        // Healthy Fats
-        'avocado': { name: 'Avocado', group: 'healthy_fats' },
-        'almonds': { name: 'Almonds', group: 'healthy_fats' },
-        'olive oil': { name: 'Olive Oil', group: 'healthy_fats' },
-        'oil': { name: 'Oil', group: 'healthy_fats' },
-        'nuts': { name: 'Nuts', group: 'healthy_fats' },
-        'walnuts': { name: 'Walnuts', group: 'healthy_fats' },
-        'chia seeds': { name: 'Chia Seeds', group: 'healthy_fats' },
-        'seeds': { name: 'Seeds', group: 'healthy_fats' },
-        'peanut butter': { name: 'Peanut Butter', group: 'healthy_fats' },
-        'peanuts': { name: 'Peanuts', group: 'healthy_fats' },
-        'cheese': { name: 'Cheese', group: 'healthy_fats' }
+    // Display names for the 4 core nutrient groups
+    const GROUP_NAMES = {
+        'protein': 'Protein',
+        'carbohydrates': 'Carbohydrates',
+        'vegetables_fiber': 'Vegetables/Fiber',
+        'healthy_fats': 'Healthy Fats'
     };
 
-    // Recommendations for missing groups
-    const GROUP_RECOMMENDATIONS = {
+    // Standard fallback recommendations from config or defaults
+    const RECOMMENDATIONS = (window.CONFIG && window.CONFIG.RECOMMENDATIONS) || {
         'vegetables_fiber': {
             label: 'Vegetables/Fiber',
             items: ['Broccoli', 'Spinach', 'Carrot']
@@ -111,23 +40,23 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         'protein': {
             label: 'Protein',
-            items: ['Chicken Breast', 'Eggs', 'Tofu']
+            items: ['Eggs', 'Chicken', 'Paneer']
         },
         'carbohydrates': {
             label: 'Carbohydrates',
-            items: ['Brown Rice', 'Oats', 'Sweet Potato']
+            items: ['Rice', 'Oats', 'Sweet Potato']
         }
-    };
-
-    const GROUP_NAMES = {
-        'protein': 'Protein',
-        'carbohydrates': 'Carbohydrates',
-        'vegetables_fiber': 'Vegetables/Fiber',
-        'healthy_fats': 'Healthy Fats'
     };
 
     // Event Listeners
     analyzeBtn.addEventListener('click', () => handleAnalyze(true));
+
+    ingredientsInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            handleAnalyze(true);
+        }
+    });
 
     ingredientsInput.addEventListener('input', () => {
         if (ingredientsInput.value.trim()) {
@@ -136,12 +65,12 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     /* ==========================================================================
-       Main Analysis Function
+       Main Analysis Handler (Spoonacular-Powered)
        ========================================================================== */
-    function handleAnalyze(shouldScroll = false) {
+    async function handleAnalyze(shouldScroll = false) {
         const rawText = ingredientsInput.value.trim();
 
-        // Validate: Error ONLY when no ingredients are entered
+        // Validation: User entered nothing
         if (!rawText) {
             showError('Please enter at least one ingredient.');
             resultsSection.classList.add('hidden');
@@ -151,7 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         hideError();
 
-        // Parse ingredients
+        // Parse ingredients list
         const items = parseInput(rawText);
         if (items.length === 0) {
             showError('Please enter at least one ingredient.');
@@ -159,46 +88,366 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // Classify ingredients into groups
-        const classified = {
-            protein: [],
-            carbohydrates: [],
-            vegetables_fiber: [],
-            healthy_fats: []
-        };
+        // Set Loading State
+        setLoading(true);
 
-        items.forEach(rawItem => {
-            const match = findGroup(rawItem);
-            classified[match.group].push(match.name);
-        });
+        try {
+            const classified = {
+                protein: [],
+                carbohydrates: [],
+                vegetables_fiber: [],
+                healthy_fats: []
+            };
 
-        // Determine Found vs Missing groups
-        const foundGroups = [];
-        const missingGroups = [];
+            const notFoundItems = [];
+            let analyzedCount = 0;
 
-        const order = ['protein', 'carbohydrates', 'healthy_fats', 'vegetables_fiber'];
-        order.forEach(groupKey => {
-            if (classified[groupKey].length > 0) {
-                foundGroups.push(groupKey);
-            } else {
-                missingGroups.push(groupKey);
+            // Check if visual demo mode is triggered via URL parameter for testing
+            const urlParams = new URLSearchParams(window.location.search);
+            const isDemo = urlParams.has('demo');
+
+            for (const item of items) {
+                try {
+                    let nutrition;
+                    if (isDemo) {
+                        nutrition = getDemoNutrition(item);
+                    } else {
+                        nutrition = await fetchSpoonacularNutrition(item);
+                    }
+
+                    if (!nutrition) {
+                        notFoundItems.push(item);
+                        continue;
+                    }
+
+                    // Dynamically classify into groups using nutrient thresholds
+                    const groups = classifyNutrientGroups(nutrition);
+                    groups.forEach(groupKey => {
+                        if (!classified[groupKey].includes(nutrition.name)) {
+                            classified[groupKey].push(nutrition.name);
+                        }
+                    });
+
+                    analyzedCount++;
+                } catch (itemErr) {
+                    if (itemErr.type === 'API_UNAVAILABLE') {
+                        // Critical API failure (e.g. 401 unauthorized, 402 quota exceeded)
+                        throw itemErr;
+                    } else if (itemErr.type === 'NOT_FOUND') {
+                        notFoundItems.push(item);
+                    } else {
+                        notFoundItems.push(item);
+                    }
+                }
             }
-        });
 
-        // Calculate Diet Score (percentage of the 4 groups present)
-        const scorePercentage = Math.round((foundGroups.length / 4) * 100);
+            // Handle ingredient not found errors
+            if (analyzedCount === 0) {
+                if (notFoundItems.length > 0) {
+                    showError(`Ingredient not found: ${notFoundItems.map(i => `"${i}"`).join(', ')}. Unable to analyze ingredient.`);
+                } else {
+                    showError('Unable to analyze ingredient.');
+                }
+                resultsSection.classList.add('hidden');
+                return;
+            } else if (notFoundItems.length > 0) {
+                showError(`Ingredient not found: ${notFoundItems.map(i => `"${i}"`).join(', ')}. Analyzed available ingredients.`);
+            }
 
-        // Render Results
-        renderResults(foundGroups, missingGroups, scorePercentage, classified);
+            // Determine Found vs Missing groups
+            const foundGroups = [];
+            const missingGroups = [];
+            const order = ['protein', 'carbohydrates', 'healthy_fats', 'vegetables_fiber'];
 
-        resultsSection.classList.remove('hidden');
-        if (shouldScroll) {
-            window.scrollTo({ top: resultsSection.offsetTop - 20, behavior: 'smooth' });
+            order.forEach(groupKey => {
+                if (classified[groupKey].length > 0) {
+                    foundGroups.push(groupKey);
+                } else {
+                    missingGroups.push(groupKey);
+                }
+            });
+
+            // Diet Score Logic:
+            // 4 groups = 100%, 3 groups = 75%, 2 groups = 50%, 1 group = 25%, 0 groups = 0%
+            const scorePercentage = Math.round((foundGroups.length / 4) * 100);
+
+            // Render Results
+            renderResults(foundGroups, missingGroups, scorePercentage, classified);
+
+            resultsSection.classList.remove('hidden');
+            if (shouldScroll) {
+                window.scrollTo({ top: resultsSection.offsetTop - 20, behavior: 'smooth' });
+            }
+
+        } catch (err) {
+            console.error('Analysis error:', err);
+            if (err.type === 'API_UNAVAILABLE') {
+                showError(err.message);
+            } else {
+                showError(err.message || 'API unavailable. Unable to analyze ingredient.');
+            }
+            resultsSection.classList.add('hidden');
+        } finally {
+            setLoading(false);
         }
     }
 
     /* ==========================================================================
-       Input Parser & Classification
+       Spoonacular API Fetching
+       ========================================================================== */
+    async function fetchSpoonacularNutrition(ingredientName) {
+        const apiKey = (window.CONFIG && window.CONFIG.SPOONACULAR_API_KEY) || '';
+        const baseUrl = (window.CONFIG && window.CONFIG.API_BASE_URL) || 'https://api.spoonacular.com';
+
+        if (!apiKey) {
+            const err = new Error('API unavailable: Spoonacular API key is missing.');
+            err.type = 'API_UNAVAILABLE';
+            throw err;
+        }
+
+        // 1. Search for ingredient ID
+        const searchUrl = `${baseUrl}/food/ingredients/search?query=${encodeURIComponent(ingredientName)}&number=1&apiKey=${apiKey}`;
+        let searchRes;
+        try {
+            searchRes = await fetch(searchUrl);
+        } catch (netErr) {
+            const err = new Error('API unavailable: Network connection to Spoonacular failed.');
+            err.type = 'API_UNAVAILABLE';
+            throw err;
+        }
+
+        if (searchRes.status === 401 || searchRes.status === 403) {
+            const err = new Error('API unavailable: Invalid or unauthorized Spoonacular API key.');
+            err.type = 'API_UNAVAILABLE';
+            throw err;
+        }
+
+        if (searchRes.status === 402) {
+            const err = new Error('API unavailable: Spoonacular daily API quota exceeded.');
+            err.type = 'API_UNAVAILABLE';
+            throw err;
+        }
+
+        if (!searchRes.ok) {
+            const err = new Error(`API unavailable: Spoonacular returned status ${searchRes.status}.`);
+            err.type = 'API_UNAVAILABLE';
+            throw err;
+        }
+
+        const searchData = await searchRes.json();
+        if (!searchData.results || searchData.results.length === 0) {
+            const err = new Error(`Ingredient not found: "${ingredientName}"`);
+            err.type = 'NOT_FOUND';
+            throw err;
+        }
+
+        const ingId = searchData.results[0].id;
+        const matchedName = searchData.results[0].name || ingredientName;
+
+        // 2. Fetch Detailed Nutrition Information for 100g / standard serving
+        const infoUrl = `${baseUrl}/food/ingredients/${ingId}/information?amount=100&unit=grams&apiKey=${apiKey}`;
+        let infoRes;
+        try {
+            infoRes = await fetch(infoUrl);
+        } catch (netErr) {
+            const err = new Error('API unavailable: Network connection to Spoonacular failed.');
+            err.type = 'API_UNAVAILABLE';
+            throw err;
+        }
+
+        if (infoRes.status === 401 || infoRes.status === 403) {
+            const err = new Error('API unavailable: Invalid or unauthorized Spoonacular API key.');
+            err.type = 'API_UNAVAILABLE';
+            throw err;
+        }
+
+        if (infoRes.status === 402) {
+            const err = new Error('API unavailable: Spoonacular daily API quota exceeded.');
+            err.type = 'API_UNAVAILABLE';
+            throw err;
+        }
+
+        if (!infoRes.ok) {
+            const err = new Error(`Unable to analyze ingredient: "${ingredientName}".`);
+            err.type = 'UNABLE_TO_ANALYZE';
+            throw err;
+        }
+
+        const infoData = await infoRes.json();
+        const nutrients = infoData.nutrition?.nutrients || [];
+
+        const getNutrientVal = (prop) => {
+            const match = nutrients.find(n => n.name.toLowerCase().includes(prop.toLowerCase()));
+            return match ? match.amount : 0;
+        };
+
+        const protein = getNutrientVal('protein');
+        const carbohydrates = getNutrientVal('carbohydrate');
+        const fat = getNutrientVal('fat');
+        const fiber = getNutrientVal('fiber');
+
+        const categoryPath = (infoData.categoryPath || []).map(c => c.toLowerCase());
+        const isVegetable = categoryPath.some(c => 
+            c.includes('vegetable') || c.includes('green') || c.includes('produce') || c.includes('fruit')
+        );
+
+        return {
+            name: capitalize(matchedName),
+            protein,
+            carbohydrates,
+            fat,
+            fiber,
+            isVegetable
+        };
+    }
+
+    /* ==========================================================================
+       Threshold-Based Dynamic Classification
+       ========================================================================== */
+    function classifyNutrientGroups(nutrition) {
+        const thresholds = (window.CONFIG && window.CONFIG.THRESHOLDS) || {
+            protein: 5.0,
+            carbohydrates: 10.0,
+            fat: 4.5,
+            fiber: 2.0
+        };
+
+        const groups = [];
+
+        // An ingredient may qualify for multiple groups based on thresholds:
+        // Fish -> Protein (>= 5g) + Healthy Fats (>= 4.5g)
+        // Eggs -> Protein (>= 5g) + Healthy Fats (>= 4.5g)
+        // Paneer -> Protein (>= 5g) + Healthy Fats (>= 4.5g)
+        // Chickpeas -> Protein (>= 5g) + Carbohydrates (>= 10g)
+        // Avocado -> Healthy Fats (>= 4.5g) + Fiber/Vegetables (>= 2g)
+        if (nutrition.protein >= thresholds.protein) {
+            groups.push('protein');
+        }
+
+        if (nutrition.carbohydrates >= thresholds.carbohydrates) {
+            groups.push('carbohydrates');
+        }
+
+        if (nutrition.fat >= thresholds.fat) {
+            groups.push('healthy_fats');
+        }
+
+        if (nutrition.fiber >= thresholds.fiber || nutrition.isVegetable) {
+            groups.push('vegetables_fiber');
+        }
+
+        return groups;
+    }
+
+    /* ==========================================================================
+       Demo Nutrition Data (For automated headless verification & unit testing)
+       ========================================================================== */
+    function getDemoNutrition(item) {
+        const lower = item.toLowerCase();
+        // Dynamic nutritional values per 100g serving
+        if (lower.includes('fish') || lower.includes('salmon')) {
+            return { name: 'Fish', protein: 20.0, carbohydrates: 0.0, fat: 12.0, fiber: 0.0, isVegetable: false };
+        }
+        if (lower.includes('egg')) {
+            return { name: 'Eggs', protein: 12.6, carbohydrates: 1.1, fat: 9.5, fiber: 0.0, isVegetable: false };
+        }
+        if (lower.includes('paneer')) {
+            return { name: 'Paneer', protein: 18.0, carbohydrates: 3.5, fat: 20.0, fiber: 0.0, isVegetable: false };
+        }
+        if (lower.includes('chickpea') || lower.includes('chana') || lower.includes('garbanzo')) {
+            return { name: 'Chickpeas', protein: 8.9, carbohydrates: 27.4, fat: 2.6, fiber: 7.6, isVegetable: false };
+        }
+        if (lower.includes('avocado')) {
+            return { name: 'Avocado', protein: 2.0, carbohydrates: 8.5, fat: 14.7, fiber: 6.7, isVegetable: true };
+        }
+        if (lower.includes('chicken')) {
+            return { name: 'Chicken', protein: 27.0, carbohydrates: 0.0, fat: 3.6, fiber: 0.0, isVegetable: false };
+        }
+        if (lower.includes('rice')) {
+            return { name: 'Rice', protein: 2.7, carbohydrates: 28.2, fat: 0.3, fiber: 0.4, isVegetable: false };
+        }
+        if (lower.includes('spinach')) {
+            return { name: 'Spinach', protein: 2.9, carbohydrates: 3.6, fat: 0.4, fiber: 2.4, isVegetable: true };
+        }
+        if (lower.includes('broccoli')) {
+            return { name: 'Broccoli', protein: 2.8, carbohydrates: 6.6, fat: 0.4, fiber: 2.6, isVegetable: true };
+        }
+        if (lower.includes('carrot')) {
+            return { name: 'Carrot', protein: 0.9, carbohydrates: 9.6, fat: 0.2, fiber: 2.8, isVegetable: true };
+        }
+        if (lower.includes('almond') || lower.includes('nut')) {
+            return { name: 'Almonds', protein: 21.2, carbohydrates: 21.6, fat: 49.9, fiber: 12.5, isVegetable: false };
+        }
+        if (lower.includes('olive oil') || lower.includes('oil')) {
+            return { name: 'Olive Oil', protein: 0.0, carbohydrates: 0.0, fat: 100.0, fiber: 0.0, isVegetable: false };
+        }
+        if (lower.includes('oat')) {
+            return { name: 'Oats', protein: 16.9, carbohydrates: 66.3, fat: 6.9, fiber: 10.6, isVegetable: false };
+        }
+        if (lower.includes('unknown') || lower.includes('xyz')) {
+            return null; // Triggers Ingredient not found
+        }
+
+        return { name: capitalize(item), protein: 0, carbohydrates: 0, fat: 0, fiber: 0, isVegetable: false };
+    }
+
+    /* ==========================================================================
+       Render Results
+       ========================================================================== */
+    function renderResults(foundGroups, missingGroups, scorePercentage, classified) {
+        // 1. 100% Balanced Diet Achieved vs Partial
+        if (foundGroups.length === 4) {
+            successBanner.classList.remove('hidden');
+            partialScoreBox.classList.add('hidden');
+            groupsMissingSection.classList.add('hidden');
+            recommendationsSection.classList.add('hidden');
+        } else {
+            successBanner.classList.add('hidden');
+            partialScoreBox.classList.remove('hidden');
+            scoreVal.textContent = `${scorePercentage}% Balanced`;
+            groupsMissingSection.classList.remove('hidden');
+            recommendationsSection.classList.remove('hidden');
+        }
+
+        // 2. Render Nutrient Groups Found (✓)
+        groupsFoundList.innerHTML = '';
+        foundGroups.forEach(groupKey => {
+            const li = document.createElement('li');
+            li.className = 'group-item found-item';
+            const itemsText = classified[groupKey].join(', ');
+            li.innerHTML = `<span class="check-icon">✓</span> <strong>${GROUP_NAMES[groupKey]}</strong> <span class="item-breakdown">(${itemsText})</span>`;
+            groupsFoundList.appendChild(li);
+        });
+
+        // 3. Render Nutrient Groups Missing (⚠)
+        groupsMissingList.innerHTML = '';
+        missingGroups.forEach(groupKey => {
+            const li = document.createElement('li');
+            li.className = 'group-item missing-item';
+            li.innerHTML = `<span class="warn-icon">⚠</span> <strong>${GROUP_NAMES[groupKey]}</strong>`;
+            groupsMissingList.appendChild(li);
+        });
+
+        // 4. Render Recommendations
+        recommendationsList.innerHTML = '';
+        missingGroups.forEach(groupKey => {
+            const rec = RECOMMENDATIONS[groupKey];
+            if (rec) {
+                const block = document.createElement('div');
+                block.className = 'rec-group';
+                block.innerHTML = `
+                    <h4 class="rec-group-title">${rec.label}:</h4>
+                    <ul class="rec-items-list">
+                        ${rec.items.map(item => `<li>- ${item}</li>`).join('')}
+                    </ul>
+                `;
+                recommendationsList.appendChild(block);
+            }
+        });
+    }
+
+    /* ==========================================================================
+       Helpers & Utility Functions
        ========================================================================== */
     function parseInput(text) {
         let list = [];
@@ -213,85 +462,23 @@ document.addEventListener('DOMContentLoaded', () => {
             .filter(s => s.length > 1);
     }
 
-    function findGroup(item) {
-        // Direct database check
-        if (INGREDIENT_DATABASE[item]) {
-            return INGREDIENT_DATABASE[item];
-        }
-
-        // Partial match
-        const foundKey = Object.keys(INGREDIENT_DATABASE).find(k => item.includes(k) || k.includes(item));
-        if (foundKey) {
-            return INGREDIENT_DATABASE[foundKey];
-        }
-
-        // Heuristic fallback
-        const lower = item.toLowerCase();
-        let group = 'vegetables_fiber';
-        if (lower.match(/chicken|meat|fish|egg|turkey|tofu|paneer|pork|beef|tuna|shrimp|salmon|dal|lentil|bean/)) {
-            group = 'protein';
-        } else if (lower.match(/rice|oat|bread|potato|pasta|roti|chapati|noodle|quinoa|grain|wheat|corn/)) {
-            group = 'carbohydrates';
-        } else if (lower.match(/avocado|oil|nut|almond|walnut|peanut|seed|butter|cheese|fat/)) {
-            group = 'healthy_fats';
-        }
-
-        const capitalized = item.charAt(0).toUpperCase() + item.slice(1);
-        return { name: capitalized, group };
+    function capitalize(str) {
+        if (!str) return '';
+        return str.charAt(0).toUpperCase() + str.slice(1);
     }
 
-    /* ==========================================================================
-       Render Results
-       ========================================================================== */
-    function renderResults(foundGroups, missingGroups, scorePercentage, classified) {
-        // 1. Check if all 4 groups are present (100% Balanced Diet Achieved)
-        if (foundGroups.length === 4) {
-            successBanner.classList.remove('hidden');
-            partialScoreBox.classList.add('hidden');
-            groupsMissingSection.classList.add('hidden');
-            recommendationsSection.classList.add('hidden');
+    function setLoading(isLoading) {
+        if (isLoading) {
+            analyzeBtn.disabled = true;
+            analyzeBtn.textContent = 'Analyzing...';
+            analyzeBtn.style.opacity = '0.75';
+            analyzeBtn.style.cursor = 'wait';
         } else {
-            successBanner.classList.add('hidden');
-            partialScoreBox.classList.remove('hidden');
-            scoreVal.textContent = `${scorePercentage}% Balanced`;
-            groupsMissingSection.classList.remove('hidden');
-            recommendationsSection.classList.remove('hidden');
+            analyzeBtn.disabled = false;
+            analyzeBtn.textContent = 'Analyze';
+            analyzeBtn.style.opacity = '1';
+            analyzeBtn.style.cursor = 'pointer';
         }
-
-        // 2. Render Present Nutrients (✓)
-        groupsFoundList.innerHTML = '';
-        foundGroups.forEach(groupKey => {
-            const li = document.createElement('li');
-            li.className = 'group-item found-item';
-            li.innerHTML = `<span class="check-icon">✓</span> <strong>${GROUP_NAMES[groupKey]}</strong> <span class="item-breakdown">(${classified[groupKey].join(', ')})</span>`;
-            groupsFoundList.appendChild(li);
-        });
-
-        // 3. Render Missing Nutrients (⚠)
-        groupsMissingList.innerHTML = '';
-        missingGroups.forEach(groupKey => {
-            const li = document.createElement('li');
-            li.className = 'group-item missing-item';
-            li.innerHTML = `<span class="warn-icon">⚠</span> <strong>${GROUP_NAMES[groupKey]}</strong>`;
-            groupsMissingList.appendChild(li);
-        });
-
-        // 4. Render Recommendations
-        recommendationsList.innerHTML = '';
-        missingGroups.forEach(groupKey => {
-            const rec = GROUP_RECOMMENDATIONS[groupKey];
-            if (rec) {
-                const block = document.createElement('div');
-                block.className = 'rec-group';
-                block.innerHTML = `
-                    <h4 class="rec-group-title">${rec.label}:</h4>
-                    <ul class="rec-items-list">
-                        ${rec.items.map(item => `<li>- ${item}</li>`).join('')}
-                    </ul>
-                `;
-                recommendationsList.appendChild(block);
-            }
-        });
     }
 
     function showError(msg) {
@@ -310,12 +497,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const params = new URLSearchParams(window.location.search);
     if (params.get('demo') === '50') {
         ingredientsInput.value = 'chicken, rice';
-        handleAnalyze();
+        handleAnalyze(false);
     } else if (params.get('demo') === '100') {
         ingredientsInput.value = 'chicken, rice, spinach, avocado';
-        handleAnalyze();
+        handleAnalyze(false);
+    } else if (params.get('demo') === 'multi') {
+        // Tests multi-group ingredients (fish, chickpeas)
+        ingredientsInput.value = 'fish, chickpeas';
+        handleAnalyze(false);
     } else if (params.get('demo') === 'error') {
         ingredientsInput.value = '';
-        handleAnalyze();
+        handleAnalyze(false);
+    } else if (params.get('live') === 'chicken') {
+        ingredientsInput.value = 'chicken';
+        handleAnalyze(false);
     }
 });

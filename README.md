@@ -1,113 +1,101 @@
-# 🥗 Balanced Diet Analyzer
+﻿# 🥗 Balanced Diet Analyzer
 
-A clean, minimalist frontend web application built with **HTML5, CSS3, and Vanilla JavaScript**. The application evaluates user-entered ingredients, categorizes them into the four essential nutritional pillars, calculates a **Diet Score**, highlights **Nutrient Groups Found** versus **Nutrient Groups Missing**, and provides actionable **Recommendations** to balance the diet.
-
----
-
-## 🎯 Purpose & Functionality
-
-The purpose of this project is to analyze nutritional balance and educate users on balanced eating without confusing them with complex recipe generation or overwhelming dashboards.
-
-### Core Nutritional Pillars Analyzed:
-1. **Protein**: e.g., Chicken, Eggs, Salmon, Tofu, Paneer, Lentils, Chickpeas.
-2. **Carbohydrates**: e.g., Rice, Oats, Bread, Sweet Potato, Quinoa, Pasta.
-3. **Vegetables / Fiber**: e.g., Broccoli, Spinach, Carrot, Tomatoes, Bell Pepper.
-4. **Healthy Fats**: e.g., Avocado, Almonds, Olive Oil, Walnuts, Chia Seeds.
+A clean, minimalist web application built with **HTML5, CSS3, Vanilla JavaScript**, and **Spoonacular API Integration**. The application evaluates user-entered ingredients dynamically by retrieving nutritional data via Spoonacular API, classifies them into four core nutritional groups using quantitative thresholds, calculates a **Diet Score**, highlights **Nutrient Groups Found** versus **Nutrient Groups Missing**, and provides targeted **Recommendations**.
 
 ---
 
-## 🔄 Application Logic (Input ➔ Processing ➔ Output)
+## 🎯 Key Capabilities
 
-### 1. Input:
-The user enters available kitchen ingredients (separated by commas, spaces, or newlines) into a single input box.
+1. **Spoonacular API Integration**:
+   - Searches each ingredient dynamically (`/food/ingredients/search`).
+   - Fetches detailed macronutrients and micronutrients (`/food/ingredients/{id}/information`).
+   - Stores the API key in a clean configuration constant (`config.js`).
 
-### 2. Processing:
-- Vanilla JavaScript normalizes and tokenizes the entered ingredients.
-- Cross-references each ingredient against a built-in culinary classification dictionary.
-- Identifies which of the 4 groups are present and which are missing.
-- Calculates the **Diet Score**:
-  - 1 group = **25% Balanced**
-  - 2 groups = **50% Balanced**
-  - 3 groups = **75% Balanced**
-  - 4 groups = **100% Balanced**
+2. **Threshold-Based Nutrient Classification**:
+   - Classifies ingredients into 4 nutritional groups based on nutritional thresholds:
+     - **Protein**: $\ge 5.0\text{g}$ protein per serving.
+     - **Carbohydrates**: $\ge 10.0\text{g}$ carbohydrates per serving.
+     - **Healthy Fats**: $\ge 4.5\text{g}$ fat per serving.
+     - **Vegetables / Fiber**: $\ge 2.0\text{g}$ fiber per serving or vegetable category.
+   - **Multi-Group Classification**: An ingredient can dynamically belong to multiple nutrient groups:
+     - **Fish / Salmon** $\rightarrow$ Protein + Healthy Fats
+     - **Eggs** $\rightarrow$ Protein + Healthy Fats
+     - **Paneer** $\rightarrow$ Protein + Healthy Fats
+     - **Chickpeas** $\rightarrow$ Protein + Carbohydrates
+     - **Avocado** $\rightarrow$ Healthy Fats + Vegetables/Fiber
 
-### 3. Output:
+3. **Diet Score Calculation**:
+   - 4 groups found = **100% Balanced**
+   - 3 groups found = **75% Balanced**
+   - 2 groups found = **50% Balanced**
+   - 1 group found = **25% Balanced**
+   - 0 groups found = **0% Balanced**
 
-#### Scenario A: When Nutrient Groups Are Missing (< 100%)
-- **Diet Score**: `${score}% Balanced` (e.g. `50% Balanced`)
-- **Nutrient Groups Found**:
-  - ✓ Protein
-  - ✓ Carbohydrates
-- **Nutrient Groups Missing**:
-  - ⚠ Healthy Fats
-  - ⚠ Vegetables/Fiber
-- **Recommendations**:
-  - **Vegetables/Fiber**: Broccoli, Spinach, Carrot
-  - **Healthy Fats**: Avocado, Almonds, Olive Oil
+4. **100% Balanced Diet Achieved**:
+   - When all 4 nutrient groups are present, displays:
+     - `✓ Balanced Diet Achieved`
+     - `Diet Score: 100%`
+     - *"Your ingredient selection contains all major nutrient groups required for a balanced diet."*
+   - Displays all 4 found nutrient groups with ingredient breakdowns. Missing groups and recommendations are hidden.
 
-#### Scenario B: When All 4 Nutrient Groups Are Present (100%)
-- **Success Banner**:
-  - `✓ Balanced Diet Achieved`
-  - `Diet Score: 100%`
-- **Message**:
-  > *"Your ingredient selection contains all major nutrient groups required for a balanced diet."*
-- **Nutrient Groups Found**:
-  - ✓ Protein
-  - ✓ Carbohydrates
-  - ✓ Vegetables/Fiber
-  - ✓ Healthy Fats
-
-#### Scenario C: Empty Input Validation
-- Only triggers an error when no ingredients are entered:
-  `"Please enter at least one ingredient."`
+5. **Graceful Error Handling**:
+   - Handles Spoonacular 401 Unauthorized or 403 Forbidden $\rightarrow$ `"API unavailable: Invalid or unauthorized Spoonacular API key."`
+   - Handles Spoonacular 402 Daily Quota Exceeded $\rightarrow$ `"API unavailable: Spoonacular daily API quota exceeded."`
+   - Handles unrecognized food items $\rightarrow$ `"Ingredient not found: ... Unable to analyze ingredient."`
+   - Handles empty input validation $\rightarrow$ `"Please enter at least one ingredient."`
+   - Never crashes or breaks the layout.
 
 ---
 
-## 🛠️ Technology Stack
+## ⚙️ Configuration
 
-- **HTML5**: Semantic and accessible markup.
-- **CSS3**: Lightweight, modern responsive stylesheet with flexbox and card styling.
-- **Vanilla JavaScript**: Pure ES6+ client-side logic.
-- **Zero Dependencies**: No React, Node.js, Express, build tools, or external API keys.
+The Spoonacular API key and thresholds are managed in [`config.js`](config.js):
+
+```javascript
+const CONFIG = {
+    // Spoonacular API Key (Get a key at https://spoonacular.com/food-api/console)
+    SPOONACULAR_API_KEY: 'YOUR_SPOONACULAR_API_KEY',
+    API_BASE_URL: 'https://api.spoonacular.com',
+
+    THRESHOLDS: {
+        protein: 5.0,         // grams
+        carbohydrates: 10.0,  // grams
+        fat: 4.5,             // grams
+        fiber: 2.0            // grams
+    },
+
+    RECOMMENDATIONS: {
+        vegetables_fiber: { label: 'Vegetables/Fiber', items: ['Broccoli', 'Spinach', 'Carrot'] },
+        healthy_fats: { label: 'Healthy Fats', items: ['Avocado', 'Almonds', 'Olive Oil'] },
+        protein: { label: 'Protein', items: ['Eggs', 'Chicken', 'Paneer'] },
+        carbohydrates: { label: 'Carbohydrates', items: ['Rice', 'Oats', 'Sweet Potato'] }
+    }
+};
+```
 
 ---
 
 ## 🚀 How to Run Locally
 
-### Option 1: Python Static Server (Recommended)
+### Run with Python HTTP Server:
 ```bash
-# Navigate to the project folder
+# Navigate to the project directory
 cd "C:\Users\krishna sahithi\.gemini\antigravity\scratch\balanced-meal-planner"
 
 # Start local server
 python -m http.server 8080
 ```
-Open **http://localhost:8080** in your web browser.
-
-### Option 2: Direct File Launch
-Double-click `index.html` in Windows File Explorer to open directly in Google Chrome, Microsoft Edge, or Mozilla Firefox.
+Open **http://localhost:8080** in your browser.
 
 ---
 
-## 📁 File Structure
+## 📁 Project Structure
 
 ```
 balanced-meal-planner/
-├── index.html            # Main interface (Title, 1 Input, 1 Button, 1 Results area)
-├── style.css             # Clean modern stylesheet (~180 lines)
-├── app.js                # Food classification & scoring engine (~220 lines)
-├── ind.html              # Legacy alias redirecting to index.html
-├── index.css / ind.css   # Aliases importing style.css
-├── index.js / ind.jsx    # Aliases loading app.js
-├── screenshots/          # Visual proof screenshots
-└── README.md             # Project documentation
+├── index.html            # Main interface (Header, Input Card, Results Card)
+├── style.css             # Preserved clean, responsive stylesheet
+├── config.js             # Spoonacular API settings, thresholds & recommendations
+├── app.js                # Spoonacular fetch, threshold classification, and rendering
+└── screenshots/          # End-to-end verification screenshots
 ```
-
----
-
-## 💼 Resume & Interview Talking Points
-
-- **Focused Problem Definition**: Solves a specific problem (evaluating diet balance) with a minimalist, distraction-free UI.
-- **Clear Architectural Pipeline**: Demonstrates an Input ➔ Processing ➔ Output workflow implemented in pure vanilla JavaScript.
-- **Zero Latency / 100% Reliability**: Completely self-contained client-side logic ensures immediate execution with no external API rate limits or network failures.
-- **User-Centric Feedback**: Provides positive reinforcement when all 4 groups are met, and actionable, specific grocery recommendations when nutrients are missing.

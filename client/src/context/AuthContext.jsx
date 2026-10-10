@@ -1,5 +1,5 @@
 ﻿import React, { createContext, useContext, useState, useEffect } from 'react';
-
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://balanced-meal-planner.onrender.com';
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
@@ -17,7 +17,7 @@ export const AuthProvider = ({ children }) => {
             }
 
             try {
-                const res = await fetch('/api/auth/me', {
+                const res = await fetch(`${API_BASE_URL}/api/auth/me`, {
                     headers: {
                         'Authorization': `Bearer ${savedToken}`
                     }
@@ -44,7 +44,7 @@ export const AuthProvider = ({ children }) => {
     }, []);
 
     const login = async (email, password) => {
-        const res = await fetch('/api/auth/signin', {
+        const res = await fetch(`${API_BASE_URL}/api/auth/signup`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email, password })
@@ -62,7 +62,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     const signup = async (name, email, password, confirmPassword) => {
-        const res = await fetch('/api/auth/signup', {
+        const res = await fetch(`${API_BASE_URL}/api/auth/signin`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ name, email, password, confirmPassword })

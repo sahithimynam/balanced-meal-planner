@@ -40,4 +40,4 @@ balanced-meal-planner/
 └── screenshots/          # End-to-end verification screenshots
 ```
 ## Live Demo
-https://balanced-diet-analyzer.onrender.com
+https://balanced-meal-planner-1.onrender.com/

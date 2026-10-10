@@ -43,8 +43,9 @@ export const AuthProvider = ({ children }) => {
         verifyToken();
     }, []);
 
+    
     const login = async (email, password) => {
-        const res = await fetch(`${API_BASE_URL}/api/auth/signup`, {
+        const res = await fetch(`${API_BASE_URL}/api/auth/signin`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email, password })
@@ -61,8 +62,10 @@ export const AuthProvider = ({ children }) => {
         return data;
     };
 
+
+    
     const signup = async (name, email, password, confirmPassword) => {
-        const res = await fetch(`${API_BASE_URL}/api/auth/signin`, {
+        const res = await fetch(`${API_BASE_URL}/api/auth/signup`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ name, email, password, confirmPassword })
@@ -79,6 +82,7 @@ export const AuthProvider = ({ children }) => {
         setUser(data.user);
         return data;
     };
+
 
     const logout = () => {
         localStorage.removeItem('diet_auth_token');

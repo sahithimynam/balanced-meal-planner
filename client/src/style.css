@@ -1,0 +1,644 @@
+﻿/* ==========================================================================
+   Balanced Diet Analyzer - Clean, Modern, Lightweight Stylesheet
+   ========================================================================== */
+
+:root {
+    --primary: #16a34a;
+    --primary-hover: #15803d;
+    --primary-light: #dcfce7;
+    
+    --text-main: #0f172a;
+    --text-muted: #64748b;
+    --border: #e2e8f0;
+    --bg-page: #f8fafc;
+    --bg-card: #ffffff;
+    
+    --success-bg: #dcfce7;
+    --success-border: #86efac;
+    --success-text: #166534;
+    
+    --warning-bg: #fef3c7;
+    --warning-border: #fde68a;
+    --warning-text: #92400e;
+    
+    --danger-bg: #fee2e2;
+    --danger-border: #fecaca;
+    --danger-text: #b91c1c;
+
+    --radius: 10px;
+    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.06), 0 2px 4px -2px rgba(0, 0, 0, 0.04);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html, body {
+    overflow-x: hidden;
+    width: 100%;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background-color: var(--bg-page);
+    color: var(--text-main);
+    line-height: 1.6;
+    padding: 2.5rem 1rem;
+}
+
+.container {
+    max-width: 580px;
+    width: 100%;
+    min-width: 0;
+    margin: 0 auto;
+}
+
+/* ==========================================================================
+   Header
+   ========================================================================== */
+.header {
+    text-align: center;
+    margin-bottom: 1.75rem;
+}
+
+.title {
+    font-size: 1.85rem;
+    font-weight: 800;
+    color: var(--text-main);
+    letter-spacing: -0.02em;
+    margin-bottom: 0.35rem;
+}
+
+.subtitle {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+}
+
+/* ==========================================================================
+   Card Component
+   ========================================================================== */
+.card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    box-shadow: var(--shadow);
+    margin-bottom: 1.5rem;
+}
+
+.input-label {
+    display: block;
+    font-weight: 600;
+    font-size: 0.95rem;
+    margin-bottom: 0.5rem;
+    color: var(--text-main);
+}
+
+.textarea {
+    width: 100%;
+    min-height: 90px;
+    padding: 0.85rem 1rem;
+    font-family: inherit;
+    font-size: 0.95rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    resize: vertical;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    margin-bottom: 1rem;
+}
+
+.textarea:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.15);
+}
+
+.btn-primary {
+    display: block;
+    width: 100%;
+    padding: 0.75rem 1.25rem;
+    font-size: 1rem;
+    font-weight: 600;
+    background-color: var(--primary);
+    color: white;
+    border: none;
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-hover);
+    transform: translateY(-1px);
+}
+
+.error-msg {
+    background-color: var(--danger-bg);
+    color: var(--danger-text);
+    border: 1px solid var(--danger-border);
+    border-radius: var(--radius);
+    padding: 0.65rem 0.85rem;
+    font-size: 0.88rem;
+    font-weight: 500;
+    margin-top: 0.75rem;
+}
+
+/* ==========================================================================
+   Results Section
+   ========================================================================== */
+.score-box {
+    margin-bottom: 1.25rem;
+    padding: 0.85rem 1rem;
+    background: #f1f5f9;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.score-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--text-main);
+}
+
+.score-badge {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: var(--primary);
+}
+
+/* Success Banner for 100% Balanced Diet */
+.success-banner {
+    background-color: var(--success-bg);
+    border: 1px solid var(--success-border);
+    border-radius: var(--radius);
+    padding: 1.25rem;
+    margin-bottom: 1.25rem;
+    text-align: center;
+}
+
+.success-badge {
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: var(--success-text);
+    margin-bottom: 0.25rem;
+}
+
+.success-score {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--success-text);
+    margin-bottom: 0.5rem;
+}
+
+.success-message {
+    font-size: 0.9rem;
+    color: var(--success-text);
+    line-height: 1.4;
+}
+
+/* Section Headings */
+.section-title {
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: var(--text-main);
+}
+
+.found-title {
+    color: var(--success-text);
+}
+
+.missing-title {
+    color: var(--warning-text);
+    margin-top: 1.25rem;
+}
+
+.recs-title {
+    color: var(--text-main);
+    margin-top: 1.25rem;
+}
+
+/* Group Lists */
+.group-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.group-item {
+    font-size: 0.92rem;
+    padding: 0.4rem 0.6rem;
+    border-radius: 6px;
+    background: #f8fafc;
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.check-icon {
+    color: var(--primary);
+    font-weight: bold;
+    font-size: 1.05rem;
+}
+
+.warn-icon {
+    color: #f59e0b;
+    font-weight: bold;
+    font-size: 1.05rem;
+}
+
+.item-breakdown {
+    color: var(--text-muted);
+    font-size: 0.82rem;
+    margin-left: auto;
+    word-break: break-word;
+    text-align: right;
+}
+
+/* Recommendations Section */
+.recommendations-box {
+    background: #fffbeb;
+    border: 1px solid var(--warning-border);
+    border-radius: var(--radius);
+    padding: 1rem;
+    margin-top: 1.25rem;
+}
+
+.rec-group {
+    margin-bottom: 0.75rem;
+}
+
+.rec-group:last-child {
+    margin-bottom: 0;
+}
+
+.rec-group-title {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--warning-text);
+    margin-bottom: 0.25rem;
+}
+
+.rec-items-list {
+    list-style: none;
+    padding-left: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
+.rec-items-list li {
+    font-size: 0.88rem;
+    color: var(--text-main);
+    font-weight: 500;
+}
+
+/* Utilities */
+.hidden {
+    display: none !important;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 600px) {
+    body {
+        padding: 1.5rem 0.75rem;
+    }
+    .card {
+        padding: 1.15rem;
+    }
+    .title {
+        font-size: 1.5rem;
+    }
+}
+
+
+/* ==========================================================================
+   Navigation Bar (MERN Feature Integration)
+   ========================================================================== */
+.app-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.65rem 1rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.nav-tabs {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.nav-tab-btn {
+    padding: 0.45rem 0.9rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    border-radius: 6px;
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.nav-tab-btn:hover {
+    color: var(--text-main);
+    background: #f1f5f9;
+}
+
+.nav-tab-btn.active {
+    background: var(--primary-light);
+    color: var(--primary-hover);
+    border-color: var(--success-border);
+}
+
+.nav-auth {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+}
+
+.user-tag {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--text-main);
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.btn-secondary {
+    padding: 0.45rem 0.9rem;
+    font-size: 0.88rem;
+    font-weight: 600;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: var(--bg-card);
+    color: var(--text-main);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-secondary:hover {
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+}
+
+.btn-sm-primary {
+    padding: 0.45rem 0.9rem;
+    font-size: 0.88rem;
+    font-weight: 600;
+    border-radius: 6px;
+    border: none;
+    background: var(--primary);
+    color: white;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-sm-primary:hover {
+    background: var(--primary-hover);
+}
+
+/* ==========================================================================
+   Auth Modal (Sign Up & Sign In)
+   ========================================================================== */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(15, 23, 42, 0.45);
+    backdrop-filter: blur(2px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    padding: 1rem;
+}
+
+.modal-content {
+    background: var(--bg-card);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    padding: 1.75rem;
+    width: 100%;
+    max-width: 420px;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+    position: relative;
+    animation: modalFadeIn 0.2s ease-out;
+}
+
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.25rem;
+}
+
+.modal-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-main);
+}
+
+.modal-close {
+    background: transparent;
+    border: none;
+    font-size: 1.35rem;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 0.25rem;
+    line-height: 1;
+}
+
+.modal-close:hover {
+    color: var(--text-main);
+}
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-label {
+    display: block;
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--text-main);
+    margin-bottom: 0.35rem;
+}
+
+.form-input {
+    width: 100%;
+    padding: 0.65rem 0.85rem;
+    font-family: inherit;
+    font-size: 0.92rem;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.15);
+}
+
+.modal-footer-switch {
+    margin-top: 1rem;
+    text-align: center;
+    font-size: 0.88rem;
+    color: var(--text-muted);
+}
+
+.modal-footer-switch button {
+    background: transparent;
+    border: none;
+    color: var(--primary);
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: underline;
+    margin-left: 0.25rem;
+}
+
+.modal-footer-switch button:hover {
+    color: var(--primary-hover);
+}
+
+/* ==========================================================================
+   Diet Analysis History Page & Re-Analyze Component
+   ========================================================================== */
+.history-section {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.history-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.25rem;
+    box-shadow: var(--shadow);
+    transition: border-color 0.2s;
+}
+
+.history-card:hover {
+    border-color: #cbd5e1;
+}
+
+.history-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.history-date {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+.history-score-tag {
+    font-size: 0.88rem;
+    font-weight: 800;
+    padding: 0.2rem 0.55rem;
+    border-radius: 9999px;
+    background: #f1f5f9;
+    color: var(--primary);
+}
+
+.history-score-tag.score-100 {
+    background: var(--success-bg);
+    color: var(--success-text);
+}
+
+.history-row {
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.history-label {
+    font-weight: 700;
+    color: var(--text-main);
+    display: inline-block;
+    margin-right: 0.4rem;
+}
+
+.history-ingredients-text {
+    color: var(--text-main);
+    word-break: break-word;
+}
+
+.history-missing-text {
+    color: var(--warning-text);
+    font-weight: 500;
+}
+
+.history-missing-text.none {
+    color: var(--success-text);
+}
+
+.history-actions {
+    margin-top: 0.85rem;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.btn-reanalyze {
+    padding: 0.5rem 1rem;
+    font-size: 0.88rem;
+    font-weight: 700;
+    background-color: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.btn-reanalyze:hover {
+    background-color: var(--primary-hover);
+    transform: translateY(-1px);
+}
+
+.history-empty {
+    text-align: center;
+    padding: 2.5rem 1rem;
+    color: var(--text-muted);
+}
+
+.history-empty p {
+    margin-bottom: 1rem;
+    font-size: 0.95rem;
+}

@@ -1,0 +1,12 @@
+{
+  "name": "balanced-diet-analyzer",
+  "version": "2.0.0",
+  "description": "Full-stack MERN Balanced Diet Analyzer with User Authentication, Diet History, and Re-Analyze",
+  "scripts": {
+    "server": "node server/server.js",
+    "client": "npm --prefix client run dev",
+    "build": "npm --prefix client run build",
+    "start": "node server/server.js",
+    "test-server": "node server/test-server.js"
+  }
+}

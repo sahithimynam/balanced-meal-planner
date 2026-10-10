@@ -63,7 +63,7 @@ export default function Analyzer({ initialIngredients = '', onAnalysisComplete }
                     const missingNutrients = analysis.missingGroups.map(g => GROUP_NAMES[g]);
                     const recommendationsData = analysis.missingGroups.map(g => RECOMMENDATIONS[g]).filter(Boolean);
 
-                    const res = await fetch('/api/history', {
+                    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/history`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',

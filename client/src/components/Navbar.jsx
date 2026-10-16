@@ -21,7 +21,7 @@ export default function Navbar({ currentTab, setCurrentTab, openAuthModal }) {
                     className={`nav-tab-btn ${currentTab === 'analyzer' ? 'active' : ''}`}
                     onClick={() => setCurrentTab('analyzer')}
                 >
-                    🥗 Analyzer
+                     Analyzer
                 </button>
                 <button
                     id="nav-history-tab"
@@ -29,7 +29,7 @@ export default function Navbar({ currentTab, setCurrentTab, openAuthModal }) {
                     className={`nav-tab-btn ${currentTab === 'history' ? 'active' : ''}`}
                     onClick={handleHistoryClick}
                 >
-                    📜 History {user ? '' : '🔒'}
+                     History {user ? '' : ''}
                 </button>
             </div>
 
@@ -37,7 +37,7 @@ export default function Navbar({ currentTab, setCurrentTab, openAuthModal }) {
                 {user ? (
                     <>
                         <span id="nav-user-tag" className="user-tag" title={user.email}>
-                            👤 {user.name}
+                             {user.name}
                         </span>
                         <button
                             id="nav-signout-btn"

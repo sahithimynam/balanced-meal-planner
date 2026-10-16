@@ -5,7 +5,7 @@ const CHROME_PATH = 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe'
 const ARTIFACT_DIR = 'C:\\Users\\krishna sahithi\\.gemini\\antigravity\\brain\\011a19ac-4c0d-4396-bd9f-a6f8021a76c1';
 
 async function runE2ETests() {
-  console.log('🚀 Starting E2E Puppeteer testing against http://localhost:5000...');
+  console.log(' Starting E2E Puppeteer testing against http://localhost:5000...');
   const browser = await puppeteer.launch({
     executablePath: CHROME_PATH,
     headless: 'new',
@@ -74,7 +74,7 @@ async function runE2ETests() {
     await page.screenshot({ path: path.join(ARTIFACT_DIR, '05_history_v1.png') });
 
     // 7. Click Re-Analyze button
-    console.log('7. Clicking "🔄 Re-Analyze"...');
+    console.log('7. Clicking " Re-Analyze"...');
     await page.click('.btn-reanalyze');
 
     // Verify view returned to analyzer and input prefilled
@@ -128,9 +128,9 @@ async function runE2ETests() {
     console.log('✓ Successfully logged out!');
     await page.screenshot({ path: path.join(ARTIFACT_DIR, '08_logged_out.png') });
 
-    console.log('\n🎉 ALL MERN WORKFLOW END-TO-END TESTS PASSED FLAWLESSLY!');
+    console.log('\n ALL MERN WORKFLOW END-TO-END TESTS PASSED FLAWLESSLY!');
   } catch (err) {
-    console.error('❌ E2E Test Error:', err);
+    console.error(' E2E Test Error:', err);
     await page.screenshot({ path: path.join(ARTIFACT_DIR, 'error_e2e_state.png') });
     process.exit(1);
   } finally {

@@ -66,7 +66,7 @@ export default function History({ onReAnalyze, openAuthModal }) {
                 </header>
                 <div className="card" style={{ textAlign: 'center', padding: '2.5rem 1rem' }}>
                     <p style={{ marginBottom: '1.25rem', color: 'var(--text-muted)' }}>
-                        🔒 You need an account to view and save your meal history.
+                         You need an account to view and save your meal history.
                     </p>
                     <button
                         type="button"
@@ -113,7 +113,7 @@ export default function History({ onReAnalyze, openAuthModal }) {
                             <div key={record._id || index} className="history-card">
                                 <div className="history-card-header">
                                     <span className="history-date">
-                                        📅 {formatDate(record.createdAt)}
+                                         {formatDate(record.createdAt)}
                                     </span>
                                     <span className={`history-score-tag ${record.dietScore === 100 ? 'score-100' : ''}`}>
                                         {record.dietScore}% Balanced
@@ -147,7 +147,7 @@ export default function History({ onReAnalyze, openAuthModal }) {
                                         onClick={() => onReAnalyze(ingredientsText)}
                                         title="Prefill this meal into the Analyzer to modify or add ingredients"
                                     >
-                                        🔄 Re-Analyze
+                                         Re-Analyze
                                     </button>
                                 </div>
                             </div>

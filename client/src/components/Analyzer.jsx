@@ -168,7 +168,7 @@ export default function Analyzer({ initialIngredients = '', onAnalysisComplete }
                     {/* Auto-saved badge */}
                     {savedNotice && (
                         <div style={{ marginBottom: '1rem', padding: '0.45rem 0.75rem', background: '#f1f5f9', borderRadius: '6px', fontSize: '0.82rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-                            💾 <span>Saved to your Diet History</span>
+                             <span>Saved to your Diet History</span>
                         </div>
                     )}
 
